@@ -3,34 +3,23 @@ const axios = require('axios')
 
 const userInfoList =[
   {
-    userId: '5119',
-    'Sign':'91df7b089fa8d7775616ac13bacdf8c5',
-    'TraceLog-Id':"088a0d3b-a78f-4bad-8bbb-6a3ca8ab2657",
-    'Access-Token':'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvTFZEVGpsMTRUTVlFTVFNNUdIZkowSHBKTGNNIiwib3BlbmlkIjoib0JPOGM0OWFwR1pPQWZtNndIVlA2a2ZMTTh2VSIsIm1vYmlsZSI6IjEzMDcwMTU1MTE5IiwidXNlclR5cGUiOiJNRU1CRVIiLCJleHAiOjE3MjAwNzQ2NzYsImJlbG9uZ1RvSWQiOjEsImlhdCI6MTcxNzQ4MjY3NiwibWVtYmVySWQiOjEyNzE4NjMwMn0.r1N53H3wr_Wk25xxxlRllLO_5ri7ILidRd2oyDpyZ_s'
+    userId: '138xxxx',
+    'Sign':'63b263cxxx',
+    'TraceLog-Id':"088a0d3bxxx",
+    'Access-Token':'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.xxxxx'
   },
   {
-    userId: '9929',
-    'Sign':'63b263c0cc50b9c8234612860aa60011',
-    'TraceLog-Id':"65e2dd76-683d-48d6-889c-fbe51ef786bf",
-    'Access-Token':'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvTFZEVGp0ek1pOU1EZG1Bd2JnUnI2M2VOaDh3Iiwib3BlbmlkIjoib0JPOGM0NHRBX2Z3eEY5WllVY2cxWVJ2Uy1YcyIsIm1vYmlsZSI6IjEzMjQwMjk5OTI5IiwidXNlclR5cGUiOiJNRU1CRVIiLCJleHAiOjE3MjAzMjE2NDEsImJlbG9uZ1RvSWQiOjEsImlhdCI6MTcxNzcyOTY0MSwibWVtYmVySWQiOjEyNzI0NDE2N30.dW5qI3Bd7-f09npjSvlQhfC7CA1Vo3-e4nPjqETK7WA'
+    userId: '138xxxx',
+    'Sign':'63b263cxxx',
+    'TraceLog-Id':"088a0d3bxxx",
+    'Access-Token':'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.xxxxx'
   },
   {
-    userId: '5119',
-    'Sign':'1350e8bd518fe0f4774edf482f12d32c',
-    'TraceLog-Id':"32038ddb-943c-4a5b-a01c-a1fcb5602d9f",
-    'Access-Token':'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvTFZEVGpxOF9ZalNJbGp2aWt3cm5XNC0xYW9vIiwib3BlbmlkIjoib0JPOGM0NXpsTTRCNGE4VlJlUDlyOW1nc2VidyIsIm1vYmlsZSI6IjE4MjAxNjQ4ODE2IiwidXNlclR5cGUiOiJNRU1CRVIiLCJleHAiOjE3MjAzMjE3NDYsImJlbG9uZ1RvSWQiOjEsImlhdCI6MTcxNzcyOTc0NiwibWVtYmVySWQiOjEyNzI0NDIxN30.IUYO6UbOeodCPjHdop_VBYkhscCtayVHw6MRxi4fwd4'
+    userId: '138xxxx',
+    'Sign':'1350exxxx',
+    'TraceLog-Id':"088a0d3bxxx",
+    'Access-Token':'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.xxxxx'
   },
-  // {
-  //   userId: '9929',
-  //   token:"770f5efac2fb753c394d1245975ac9",
-  //   data:{"is_weapp":1,"sid":"YZ1247568088281591808YZsZdouVRu","version":"2.171.8","client":"weapp","bizEnv":"wsc","uuid":"8yOO5yc0SSVXaG31717484999225","ftime":new Date().getTime()}
-
-  // },
-  // {
-  //   userId: '8816',
-  //   token:"f37c0e925b96ba6430c16419a1d356",
-  //   data:{"is_weapp":1,"sid":"YZ1247568694549549056YZRY3fJOO2","version":"2.171.8","client":"weapp","bizEnv":"wsc","uuid":"Wv2zLmiwTtxJ8K31717485140711","ftime":new Date().getTime()}
-  // },
 ]
 const baseUrl = 'https://scrm.aimatech.com/aima/wxclient/mkt/activities/sign:'
 const headers = {

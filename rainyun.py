@@ -12,9 +12,8 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 
 userList = [
-    {"user":"faintout","pwd":"yhn79037596"},
-    {"user":"faintout_8816","pwd":"yhn79037596"},
-    {"user":"faintout_9929","pwd":"yhn79037596"},
+    {"user":"xx","pwd":"xxx"},
+    {"user":"xx","pwd":"xxx"},
 ]
 
 def login_sign (item):#line:17

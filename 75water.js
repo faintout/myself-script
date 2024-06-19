@@ -7,30 +7,15 @@ console.log = (...args)=>{
   consoleold(...args)
 }
 const userInfoList =[
-  // {
-  //   userId: '5119',
-  //   token:"ef50e7633a2b7ad185fe7bd9a76be0",
-  //   data:{"is_weapp":1,"sid":"YZ1246163617932701696YZpp4RlUd0","version":"2.173.6","client":"weapp","bizEnv":"wsc","uuid":"13UvBzfrawBidlx1717150040462","ftime":new Date().getTime()},
-  // },
-  // {
-  //   userId: '9929',
-  //   token:"3257257a40dfb4c8639f694fb5a9f9",
-  //   data:{"is_weapp":1,"sid":"YZ1247135534397095936YZVMRHIsP9","version":"2.173.6","client":"weapp","bizEnv":"wsc","uuid":"0iarMiR40oNcDhy1717381856513","ftime":new Date().getTime()}
-  // },
-  // {
-  //   userId: '8816',
-  //   token:"67d3bdce7a5f843943fab511d9addf",
-  //   data:{"is_weapp":1,"sid":"YZ1247137729603567616YZ19oZH6sI","version":"2.173.6","client":"weapp","bizEnv":"wsc","uuid":"TTzArzpYf8jP9cM1717382331545","ftime":new Date().getTime()}
-  // },
   {
-    userId: '东',
-    token:"62c15a249efe33ddeebe3fb56dc874",
-    data:{"is_weapp":1,"sid":"YZ1250430885413810176YZdw9RH56w","version":"2.173.6","client":"weapp","bizEnv":"wsc","uuid":"QozNCfdpPLArmu51717149916438","ftime":new Date().getTime()}
+    userId: '138xxxx',
+    token:"xxx",
+    data:{"is_weapp":1,"sid":"YZxxx","version":"2.171.8","client":"weapp","bizEnv":"wsc","uuid":"xx","ftime":new Date().getTime()}
   },
-    {
-    userId: '东1',
-    token:"8b24c165e6ac9e4a77156e55a1b209",
-    data:{"is_weapp":1,"sid":"YZ1250430745722474496YZX6KYz2Pa","version":"2.173.6","client":"weapp","bizEnv":"wsc","uuid":"dPN7c9aDRQbsqcZ1717150035269","ftime":new Date().getTime()}
+  {
+    userId: '138xxxx',
+    token:"xxxx",
+    data:{"is_weapp":1,"sid":"YZxxx","version":"2.171.8","client":"weapp","bizEnv":"wsc","uuid":"xx","ftime":new Date().getTime()}
   },
 ]
 
@@ -150,7 +135,8 @@ const processTokens = async () => {
     }
     pushPlusSend({
       title:'7.5water签到',
-      token:'04f41162bcb343129b0434a20cf3b3dc',
+      //此处填写pushPlus的token
+      token:'',
       content:pushStr
     })
   };

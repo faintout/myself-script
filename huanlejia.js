@@ -1,23 +1,16 @@
 // const $ = new Env("欢乐家签到");
 const axios = require('axios')
-
+// userId为自定义标识
 const userInfoList =[
   {
-    userId: '5119',
-    token:"c26edd71d8a8207ca42eeeca98968e",
-    data:{"is_weapp":1,"sid":"YZ1247560851788234752YZZ9ltNPg6","version":"2.171.8","client":"weapp","bizEnv":"wsc","uuid":"KDlYC4FgfMTHhdC1717482721417","ftime":new Date().getTime()}
+    userId: '138xxxx',
+    token:"xxx",
+    data:{"is_weapp":1,"sid":"YZxxx","version":"2.171.8","client":"weapp","bizEnv":"wsc","uuid":"xx","ftime":new Date().getTime()}
   },
   {
-    userId: '9929',
-    token:"770f5efac2fb753c394d1245975ac9",
-    data:{"is_weapp":1,"sid":"YZ1247568088281591808YZsZdouVRu","version":"2.171.8","client":"weapp","bizEnv":"wsc","uuid":"8yOO5yc0SSVXaG31717484999225","ftime":new Date().getTime()}
-
-  },
-  {
-    userId: '8816',
-    token:"f37c0e925b96ba6430c16419a1d356",
-    data:{"is_weapp":1,"sid":"YZ1247568694549549056YZRY3fJOO2","version":"2.171.8","client":"weapp","bizEnv":"wsc","uuid":"Wv2zLmiwTtxJ8K31717485140711","ftime":new Date().getTime()}
-
+    userId: '138xxxx',
+    token:"770f5xxxx",
+    data:{"is_weapp":1,"sid":"YZxxx","version":"2.171.8","client":"weapp","bizEnv":"wsc","uuid":"xx","ftime":new Date().getTime()}
   },
 ]
 const baseUrl = 'https://h5.youzan.com'

@@ -16,7 +16,7 @@ formatted_new_time = new_time.strftime("%Y-%m-%d %H:%M:%S")
 
 
 userList = [
-   {"username":"yhnyhn","password":"yhnyhn"}
+   {"username":"xxx","password":"xxx"}
 ]
 # 初始化重连次数字典
 reconnect_counts = {}
