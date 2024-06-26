@@ -33,6 +33,7 @@ const headers = {
 const url = {
   'login':'/index/login',
   'sign':'/user/sign',
+  'sign_reward':'/user/sign_reward',
   'clock':'/user/clock',
   'clock_reward':'/user/clock_reward',
   'info':'/user/info',
@@ -50,6 +51,14 @@ const api = {
   sign: (data) => {
       return axios({
           url: baseUrl+url.sign,
+          method: 'post',
+          headers,
+          data
+      })
+  },
+  sign_reward: (data) => {
+      return axios({
+          url: baseUrl+url.sign_reward,
           method: 'post',
           headers,
           data
@@ -104,24 +113,27 @@ const getCurrDay = () => {
 const processTokens = async () => {
   const randomTime = random(1, 300)
   console.log('随机延迟：',randomTime);
-  // await sleep(randomTime*1000)
+  await sleep(randomTime*1000)
     for (const token of userInfoList) {
       try {
         console.log('当前用户：',token.username);
         const {data:{code,info,data:tokenData}} = await api.login(token)
         if(code!==1){
           console.log('登录失败',info)
+          await sleep(2000)
           continue;
         }
         console.log('登录成功！')
         await sleep(2000)
         const {data:{info:signInfo,data:signData}} = await api.sign(tokenData)
         await sleep(1500)
+        const {data:{data:{signin_days}}} = await api.sign_reward(tokenData)
+        await sleep(2500)
         const {data:{data:{money}}} = await api.info(tokenData)
         console.log('红包签到信息：',signInfo);
-        console.log('红包签到天数：',signData?.days||'当前已签到，未查询到累计天数！');
+        console.log('红包签到天数：',signin_days);
         console.log('红包累计金额：',signData?.reward_num||money);
-        await sleep(3500)
+        await sleep(1000*15)
         const {data:{info:clockInfo}} = await api.clock(tokenData)
         console.log('实物签到信息：',clockInfo);
         await sleep(3500)
@@ -129,8 +141,8 @@ const processTokens = async () => {
         console.log('累计打卡天数：',clockData?.clock_day);
         console.log('下个奖品：',clockData?.next_reward?.name);
         console.log('下个奖品所需天数：',clockData?.next_reward?.days);
-        await sleep(3500)
         console.log('');
+        await sleep(1000*30)
       } catch (error) {
         console.error(`处理时发生错误：`, error.toString());
       }
