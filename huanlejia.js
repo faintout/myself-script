@@ -32,13 +32,23 @@ const headers = {
   }
 const url = {
   'checkin':'/wscump/checkin/checkinV2.json?checkinId=4435617&app_id=wxf739eb6ad6a644da&kdt_id=146384563&access_token=',
-  'getCountDay':'/wscump/checkin/get_activity_by_yzuid_v2.json?checkinId=4435617&app_id=wxf739eb6ad6a644da&kdt_id=146384563&access_token='
-  
+  'getCountDay':'/wscump/checkin/get_activity_by_yzuid_v2.json?checkinId=4435617&app_id=wxf739eb6ad6a644da&kdt_id=146384563&access_token=',
+  'userInfo':'/wscaccount/api/authorize/data.json?app_id=wxf739eb6ad6a644da&kdt_id=146384563&appId=wxf739eb6ad6a644da&access_token='
 }
 const api = {
   checkin: ({data,token}) => {
         return axios({
             url: baseUrl+url.checkin+token,
+            method: 'get',
+            headers:{
+              ...headers,
+              "Extra-Data":JSON.stringify(data)
+            },
+        })
+    },
+  userInfo: ({data,token}) => {
+        return axios({
+            url: baseUrl+url.userInfo+token,
             method: 'get',
             headers:{
               ...headers,
@@ -58,6 +68,8 @@ const api = {
     },
 }
 const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
+//随机生成1-300秒的延迟
+const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
 const getCurrDay = () => {
     // 创建一个新的 Date 对象，它将包含当前的日期和时间
@@ -78,9 +90,15 @@ const getCurrDay = () => {
     return formattedDate
 }
 const processTokens = async () => {
+  const randomTime = random(1, 300)
+  console.log('随机延迟：',randomTime);
+  await sleep(randomTime*1000)
     for (const token of userInfoList) {
       try {
-        console.log('当前用户：',token.userId);
+        const data = await api.userInfo(token)
+        const {mobile} = data?.data?.data?.userInfo||{mobile:'未获取到手机号'}
+        console.log('当前用户：',mobile);
+        await sleep(2000)
         const {data:{msg}} = await api.checkin(token)
         console.log('签到信息：',msg);
         await sleep(2000)

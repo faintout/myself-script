@@ -60,8 +60,8 @@ const headers = {
   }
 const url = {
   'checkin':'/wscump/checkin/checkinV2.json?checkinId=3997371&app_id=wx5508c9ab0d2118ff&kdt_id=105036832&access_token=',
-  'getCountDay':'/wscump/checkin/get_activity_by_yzuid_v2.json?checkinId=3997371&app_id=wx5508c9ab0d2118ff&kdt_id=105036832&access_token='
-  
+  'getCountDay':'/wscump/checkin/get_activity_by_yzuid_v2.json?checkinId=3997371&app_id=wx5508c9ab0d2118ff&kdt_id=105036832&access_token=',
+  'userInfo':'/wscaccount/api/authorize/data.json?app_id=wxf739eb6ad6a644da&kdt_id=146384563&appId=wxf739eb6ad6a644da&access_token='
 }
 const api = {
   checkin: ({data,token}) => {
@@ -74,6 +74,16 @@ const api = {
             },
         })
     },
+    userInfo: ({data,token}) => {
+      return axios({
+          url: baseUrl+url.userInfo+token,
+          method: 'get',
+          headers:{
+            ...headers,
+            "Extra-Data":JSON.stringify(data)
+          },
+      })
+  },
     getCountDay: ({data,token}) => {
         return axios({
             url: baseUrl+url.getCountDay+token,
@@ -110,10 +120,12 @@ const getCurrDay = () => {
 const processTokens = async () => {
     const randomTime = random(1, 300)
     console.log('随机延迟：',randomTime);
-    // await sleep(randomTime*1000)
+    await sleep(randomTime*1000)
     for (const token of userInfoList) {
       try {
-        console.log('当前用户：',token.userId);
+        const data = await api.userInfo(token)
+        const {mobile} = data?.data?.data?.userInfo||{mobile:'未获取到手机号'}
+        console.log('当前用户：',mobile);
         try{
           const {data:{msg}} = await api.checkin(token)
           console.log('签到信息：',msg);
