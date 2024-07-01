@@ -132,7 +132,7 @@ const processTokens = async () => {
         const {data:{data:{money}}} = await api.info(tokenData)
         console.log('红包签到信息：',signInfo);
         console.log('红包签到天数：',signin_days);
-        console.log('红包累计金额：',signData?.reward_num||money);
+        console.log('红包累计金额：',money);
         await sleep(1000*15)
         const {data:{info:clockInfo}} = await api.clock(tokenData)
         console.log('实物签到信息：',clockInfo);
