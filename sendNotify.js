@@ -1,8 +1,4 @@
 /*
- * @Author: lxk0301 https://gitee.com/lxk0301
- * @Date: 2020-08-19 16:12:40
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2024-06-19 17:05:31
  * sendNotify 推送通知功能
  * @param text 通知头
  * @param desp 通知体
@@ -182,7 +178,7 @@ async function sendNotify(
   text,
   desp,
   params = {},
-  author = `\n\n本通知 By：https://github.com/leafTheFish/DeathNote\n通知时间：${new Date()}`,
+  author = `\n\n通知时间：${new Date()}`,
 ) {
   //提供6种通知
   desp += author; //增加作者信息，防止被贩卖等
