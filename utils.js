@@ -16,7 +16,7 @@ const getCurrDay = () => {
     return formattedDate
 }
 //监测时间
-const checkTime = async(args)=>{
+const checkTime = async(args = {})=>{
     const {minutes,seconds,milliseconds} = args
     const now = new Date();
     const targetTime = new Date(
