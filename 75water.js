@@ -9,7 +9,7 @@ const {sendNotify} = require('./sendNotify.js')
 const $ = Env("7.5水");
 const axios = require('axios')
 const userInfoList = $.getEnvKey('water75').split('\n')
-if(!userInfoList.length){
+if(!userInfoList.length||userInfoList[0]===''){
   throw new Error('未找到ck')
 }
 console.log(`获取到${userInfoList.length}个ck`);

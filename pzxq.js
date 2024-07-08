@@ -9,7 +9,7 @@ const {sendNotify} = require('./sendNotify.js')
 const $ = Env("瓶子星球签到");
 const axios = require('axios')
 const userInfoList = $.getEnvKey('pzxq').split('\n')
-if(!userInfoList.length){
+if(!userInfoList.length||userInfoList[0]===''){
   throw new Error('未找到ck')
 }
 console.log(`获取到${userInfoList.length}个ck`);

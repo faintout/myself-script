@@ -8,7 +8,7 @@ sleep,getCurrDay,checkTime,Env
 } = require('./utils.js')
 const $ = Env('好奇车抢红包')
 const userInfoList = $.getEnvKey('hqcshck').split('&')
-if(!userInfoList.length){
+if(!userInfoList.length||userInfoList[0]===''){
   throw new Error('未找到ck')
 }
 console.log(`获取到${userInfoList.length}个ck`);
@@ -35,40 +35,6 @@ const header = {
 'Accept-Encoding': 'gzip, deflate, br',
 'Accept-Language': 'zh-CN,zh;q=0.9',
 }
-  const httpInstance = ({parsedUrl,headers})=>{
-    return new Promise((res,rej)=>{
-      const options = {
-        protocol: parsedUrl.protocol, // 如 'http:'
-        hostname: parsedUrl.hostname, // 如 'example.com'
-        port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80), // 如果端口未指定，则默认为http的80或https的443
-        path: parsedUrl.path, // 如 '/path/to/resource'
-        method: 'GET',
-        headers
-      };
-      https.request(options,req=>{
-        req.on('response', (headers, flags) => {
-          console.log(headers, flags);
-          // for (const name in headers) {
-          //   console.log(`${name}: ${headers[name]}`);hhhhhhhhhh
-          // }
-        });
-        
-        // req.setEncoding('utf8');
-        let data = '';
-        req.on('data', (chunk) => { data += chunk; });
-        req.on('end', ()=>{
-          console.log('data',data);
-          res(JSON.parse(data));
-          // client.close();
-        });
-        req.on('error', (error) => {
-          console.error('Error during request:', error);
-        });
-        req.end();
-      })
-
-    })
-  }
 const api = {
 
   receiveActiveTask: (ck,taskId) => {
@@ -121,17 +87,17 @@ const api = {
           res(response.body)
         })
     },
-    receiveActiveTaskHttp: (ck,taskId) => {
-      // 假设这是你要请求的URL
-      const urlString = `https://channel.cheryfs.cn/archer/activity-api/pointsmall/exchangeCard?pointsMallCardId=${taskId}&exchangeCount=1&mallOrderInputVoStr=%7B%22person%22:%22%22,%22phone%22:%22%22,%22province%22:%22%22,%22city%22:%22%22,%22area%22:%22%22,%22address%22:%22%22,%22remark%22:%22%22%7D&channel=1&exchangeType=0&exchangeNeedPoints=888&exchangeNeedMoney=0&cardGoodsItemIds=`
-      return httpInstance({
-        parsedUrl:url.parse(urlString),
-        headers: {
-          ...header,
-          'accountId':ck
-         },
-      })
-    }
+    // receiveActiveTaskHttp: (ck,taskId) => {
+    //   // 假设这是你要请求的URL
+    //   const urlString = `https://channel.cheryfs.cn/archer/activity-api/pointsmall/exchangeCard?pointsMallCardId=${taskId}&exchangeCount=1&mallOrderInputVoStr=%7B%22person%22:%22%22,%22phone%22:%22%22,%22province%22:%22%22,%22city%22:%22%22,%22area%22:%22%22,%22address%22:%22%22,%22remark%22:%22%22%7D&channel=1&exchangeType=0&exchangeNeedPoints=888&exchangeNeedMoney=0&cardGoodsItemIds=`
+    //   return httpInstance({
+    //     parsedUrl:url.parse(urlString),
+    //     headers: {
+    //       ...header,
+    //       'accountId':ck
+    //      },
+    //   })
+    // }
 }
 
 

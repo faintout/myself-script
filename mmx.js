@@ -1,5 +1,6 @@
 // cron: 15 8,17 * * *
-// 抓header中的cookie 多账号换行
+// 点击 我的-积分
+// 抓wscaccount/api/authorize/data.json header中的cookie 多账号换行
 // export mmx="Cookie
 // Cookie"
 const {
@@ -9,7 +10,7 @@ const {sendNotify} = require('./sendNotify.js')
 const $ = Env("猛犸象签到");
 const axios = require('axios')
 const userInfoList = $.getEnvKey('mmx').split('\n')
-if(!userInfoList.length){
+if(!userInfoList.length||userInfoList[0]===''){
   throw new Error('未找到ck')
 }
 console.log(`获取到${userInfoList.length}个ck`);
@@ -109,7 +110,7 @@ const processTokens = async () => {
           $.logErr(`账号【${index}】 获取签到天数失败:${e.toString()}`,)
         }
         await $.wait(2000)
-        const dataPoint = await api.point(token)
+        const dataPoint = await api.point({token})
         const points = dataPoint?.data?.data?.stats?.points||`未获取到积分`
         $.log(`账号【${index}】 当前积分：${points}`,);
         await $.wait(3500)
