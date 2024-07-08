@@ -1,48 +1,20 @@
-// const $ = new Env("猛犸象签到");
+// cron: 15 8,17 * * *
+// 抓header中的cookie 多账号换行
+// export mmx="Cookie
+// Cookie"
+const {
+  getCurrDay,checkTime,Env,random
+} = require('./utils.js')
+const {sendNotify} = require('./sendNotify.js')
+const $ = Env("猛犸象签到");
 const axios = require('axios')
-let pushStr = ''
-const consoleold = console.log
-console.log = (...args)=>{
-  pushStr = pushStr.concat(args.join(' ')+'\r\n')
-  consoleold(...args)
+const userInfoList = $.getEnvKey('mmx').split('\n')
+if(!userInfoList.length){
+  throw new Error('未找到ck')
 }
-const userInfoList =[
-  {
-    userId: '5119',
-    token:'xxx'
-  },
-  {
-    userId: '9929',
-    token:'xxx'
-  },
-  {
-    userId: '8816',
-    token:'xxx'
-  },
-]
+console.log(`获取到${userInfoList.length}个ck`);
 
-const pushPlusSend = async ({title,token, content,template}) => {
-  try {
-    await axios({
-      url: 'http://www.pushplus.plus/send',
-      method: 'post',
-      headers:{
-        'Content-Type': 'application/json'
-      },
-      data:{
-        title:title,
-        token:token,
-        content:content,
-        template:template||'txt'
-      }
-  })
-    console.log('pushPlus发送成功')
-  } catch (error) {
-    console.error('pushPlus发送通知失败',error.toString())
-    await sleep(5000)
-    pushPlusSend({title,token, content,template})
-  }
-}
+
 const baseUrl = 'https://h5.youzan.com'
 const headers = {
   'Host': 'h5.youzan.com',
@@ -106,60 +78,49 @@ const api = {
         })
     },
 }
-//随机生成1-300秒的延迟
-const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
-const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
-
-const getCurrDay = () => {
-    // 创建一个新的 Date 对象，它将包含当前的日期和时间
-    const currentDate = new Date();
-
-    // 获取当前日期的年、月、日
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // 月份从 0 开始，因此需要加 1
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    const hours = String(currentDate.getHours()).padStart(2, '0');
-    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-    const milliseconds = String(currentDate.getMilliseconds());
-
-    // 将年、月、日拼接成所需格式的日期字符串
-    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}:${milliseconds}`;
-
-    return formattedDate
-}
 const processTokens = async () => {
+    let index = 0
     const randomTime = random(1, 300)
     console.log('随机延迟：',randomTime);
-    await sleep(randomTime*1000)
+    await $.wait(randomTime*1000)
     for (const token of userInfoList) {
       try {
-        const data = await api.userInfo(token)
-        const {mobile} = data?.data?.data?.userInfo||{mobile:'未获取到手机号'}
-        console.log('当前用户：',mobile);
-        try{
-          const {data:{msg}} = await api.checkin(token)
-          console.log('签到信息：',msg);
-        }catch(e){
-          console.error('签到失败',e.toString())
+        $.log('')
+        index++
+        const data = await api.userInfo({token})
+        const {mobile} = data?.data?.data?.userInfo
+        if(!mobile){
+          $.log(`账号【${index}】 登录失效`)
+          $.log('')
+          continue;
         }
-        await sleep(2000)
+        $.log(`账号【${index}】 当前用户：${mobile}`,);
         try{
-          const {data:{data:{continuesDay}}} = await api.getCountDay(token)
-          console.log('连续签到天数：',continuesDay);
+          const {data:{msg}} = await api.checkin({token})
+          $.log(`账号【${index}】 签到信息：${msg}`,);
         }catch(e){
-          console.error('获取签到天数失败',e.toString())
+          $.logErr(`账号【${index}】 签到失败:${e.toString()}`,)
         }
-        await sleep(2000)
+        await $.wait(2000)
+        try{
+          const {data:{data:{continuesDay}}} = await api.getCountDay({token})
+          $.log(`账号【${index}】 连续签到天数：${continuesDay}`,);
+        }catch(e){
+          $.logErr(`账号【${index}】 获取签到天数失败:${e.toString()}`,)
+        }
+        await $.wait(2000)
         const dataPoint = await api.point(token)
-        const points = dataPoint?.data?.data?.stats?.points||'未获取到积分'
-        console.log('当前积分：',points);
-        await sleep(3500)
-        console.log('');
+        const points = dataPoint?.data?.data?.stats?.points||`未获取到积分`
+        $.log(`账号【${index}】 当前积分：${points}`,);
+        await $.wait(3500)
+        $.log('');
       } catch (error) {
-        console.error(`处理时发生错误：`, error);
+        $.logErr(error.toString());
       }
     }
+    $.log('')
+    await sendNotify('猛犸象签到', $.logs.join('<br>'))
+    $.done()
   };
   
   processTokens()

@@ -1,11 +1,19 @@
-// const $ = new Env("瓶子星球签到");
+// cron: 16 7,18 * * *
+// 抓header 中的Authorization 多账号换行
+// export pzxq="Authorization
+// Authorization"
+const {
+  getCurrDay,checkTime,Env,random
+} = require('./utils.js')
+const {sendNotify} = require('./sendNotify.js')
+const $ = Env("瓶子星球签到");
 const axios = require('axios')
+const userInfoList = $.getEnvKey('pzxq').split('\n')
+if(!userInfoList.length){
+  throw new Error('未找到ck')
+}
+console.log(`获取到${userInfoList.length}个ck`);
 
-
-const tokensList = [
-    'xxxx',
-    'xxxx',
-]
 
 const baseUrl = 'https://exapi.jxbscbd.com'
 const url = {
@@ -45,49 +53,43 @@ const api = {
         })
     },
 }
-const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
 
-const getCurrDay = () => {
-    // 创建一个新的 Date 对象，它将包含当前的日期和时间
-    const currentDate = new Date();
-
-    // 获取当前日期的年、月、日
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // 月份从 0 开始，因此需要加 1
-    const day = String(currentDate.getDate()).padStart(2, '0');
-
-    // 将年、月、日拼接成所需格式的日期字符串
-    const formattedDate = `${year}-${month}-${day}`;
-
-    return formattedDate
-}
 const processTokens = async () => {
-    for (const token of tokensList) {
+  let index = 0
+  const randomTime = random(1, 300)
+  console.log('随机延迟：',randomTime + '秒');
+  await $.wait(randomTime*1000)
+    for (const token of userInfoList) {
       try {
+        $.log('')
+        index++
         const {data: {data: {id, userNumber, telephoneNumber}}} = await api.getUserInfo(token);
         const checkInParams = {
           userId: id,
           userNumber,
           telephoneNumber
         };
-        console.log(`查询信息成功：`, telephoneNumber);
+        $.log(`账号【${index}】 查询信息成功：${telephoneNumber}`, );
   
-        await sleep(1500);
+        await $.wait(1500);
   
         const {data: {msg}} = await api.userCheckIn(token, checkInParams);
-        console.log('签到信息：', msg);
+        $.log(`账号【${index}】 签到信息：${msg}`, );
   
-        await sleep(1500);
+        await $.wait(1500);
   
         const {data: {data: {accumulatePoints, availablePoints}}} = await api.getUserPoints(token);
-        console.log('累计积分：', accumulatePoints);
-        console.log('可用积分：', availablePoints);
-        console.log('');
+        $.log(`账号【${index}】 累计积分：${accumulatePoints}`, );
+        $.log(`账号【${index}】 可用积分：${availablePoints}`, );
+        $.log('');
   
-        await sleep(3500);
+        await $.wait(3500);
       } catch (error) {
-        console.error(`处理时发生错误：`, error);
+        $.logErr(error.toString());
       }
     }
+    $.log('')
+    await sendNotify('瓶子星球签到', $.logs.join('<br>'))
+    $.done()
   };
   processTokens()

@@ -64,7 +64,6 @@ script-providers:
     $.is_debug = getEnv('is_debug') || 'false';  // 调试模式
     $.userInfo = getEnv('wdzhsy_token') || '';  // Token
     $.userArr = JSON.parse($.userInfo) || [];  // 用户数组
-  console.log('token',$.userArr)
     $.appid = 'wx8e4763f7ed741710';  // 小程序 appId
     $.messages = [];
     

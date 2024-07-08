@@ -5,16 +5,19 @@
 # cron "0 0 6,8,20 * * *" script-path=xxx.py,tag=匹配cron用
 # const $ = new Env('雨云签到');
 
+
+# export rainyun_ck = [
+#     {"user":"xx","pwd":"xxx"},
+#     {"user":"xx","pwd":"xxx"},
+# ]
+
 import json,requests,os,time
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 
+ckList = os.getenv("rainyun_ck")
 
-
-userList = [
-    {"user":"xx","pwd":"xxx"},
-    {"user":"xx","pwd":"xxx"},
-]
+userList = json.loads(ckList)
 
 def login_sign (item):#line:17
     user = item.get("user")

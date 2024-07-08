@@ -1,18 +1,19 @@
-// const $ = new Env("欢乐家签到");
+// cron: 16 7,18 * * *
+// 抓data中sid  YZxxx 和 url中的access_token 用&拼起来 多账号换行
+// export huanlejia="YZxxx&770f5xxxx
+// 770f5xxxx"
+const {
+  getCurrDay,checkTime,Env,random
+} = require('./utils.js')
+const {sendNotify} = require('./sendNotify.js')
+const $ = Env("欢乐家签到");
 const axios = require('axios')
-// userId为自定义标识
-const userInfoList =[
-  {
-    userId: '138xxxx',
-    token:"xxx",
-    data:{"is_weapp":1,"sid":"YZxxx","version":"2.171.8","client":"weapp","bizEnv":"wsc","uuid":"xx","ftime":new Date().getTime()}
-  },
-  {
-    userId: '138xxxx',
-    token:"770f5xxxx",
-    data:{"is_weapp":1,"sid":"YZxxx","version":"2.171.8","client":"weapp","bizEnv":"wsc","uuid":"xx","ftime":new Date().getTime()}
-  },
-]
+const userInfoList = $.getEnvKey('huanlejia').split('\n')
+if(!userInfoList.length){
+  throw new Error('未找到ck')
+}
+console.log(`获取到${userInfoList.length}个ck`);
+
 const baseUrl = 'https://h5.youzan.com'
 const headers = {
   'Host': 'h5.youzan.com',
@@ -67,48 +68,44 @@ const api = {
         })
     },
 }
-const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
-//随机生成1-300秒的延迟
-const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
 
-const getCurrDay = () => {
-    // 创建一个新的 Date 对象，它将包含当前的日期和时间
-    const currentDate = new Date();
-
-    // 获取当前日期的年、月、日
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // 月份从 0 开始，因此需要加 1
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    const hours = String(currentDate.getHours()).padStart(2, '0');
-    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-    const milliseconds = String(currentDate.getMilliseconds());
-
-    // 将年、月、日拼接成所需格式的日期字符串
-    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}:${milliseconds}`;
-
-    return formattedDate
-}
 const processTokens = async () => {
+  let index = 0
   const randomTime = random(1, 300)
-  console.log('随机延迟：',randomTime);
-  await sleep(randomTime*1000)
+  console.log('随机延迟：',randomTime + '秒');
+  await $.wait(randomTime*1000)
     for (const token of userInfoList) {
       try {
-        const data = await api.userInfo(token)
-        const {mobile} = data?.data?.data?.userInfo||{mobile:'未获取到手机号'}
-        console.log('当前用户：',mobile);
-        await sleep(2000)
-        const {data:{msg}} = await api.checkin(token)
-        console.log('签到信息：',msg);
-        await sleep(2000)
-        const {data:{data:{continuesDay}}} = await api.getCountDay(token)
-        console.log('连续签到天数：',continuesDay);
-        await sleep(3500)
+        $.log('')
+        index++
+        const userData = token.split('&')
+        const headerData = {"sid":userData[0],"version":"2.173.6","clientType":"weapp-miniprogram","client":"weapp","bizEnv":"","uuid":"8yOO5yc0SSVXaG31717484999225","ftime":new Date().getTime()}
+        const headerParams = {
+          data:headerData,
+          token:userData[1]
+        }
+        const data = await api.userInfo(headerParams)
+        const {mobile} = data?.data?.data?.userInfo
+        if(!mobile){
+          $.log(`账号【${index}】登录失效`)
+          $.log('')
+          continue;
+        }
+        $.log(`账号【${index}】 当前用户：${mobile}`);
+        await $.wait(2000)
+        const {data:{msg}} = await api.checkin(headerParams)
+        $.log(`账号【${index}】 签到信息：${msg}`);
+        await $.wait(2000)
+        const {data:{data:{continuesDay}}} = await api.getCountDay(headerParams)
+        $.log(`账号【${index}】 连续签到天数：${continuesDay}`);
+        await $.wait(3500)
       } catch (error) {
-        console.error(`处理时发生错误：`, error);
+        $.logErr(error.toString());
       }
     }
+    $.log('')
+    await sendNotify('欢乐家签到', $.logs.join('<br>'))
+    $.done()
   };
   
   processTokens()

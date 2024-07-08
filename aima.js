@@ -1,26 +1,19 @@
-// const $ = new Env("爱玛签到");
+// cron: 45 7,18 * * *
+// 抓header中Sign、TraceLog-Id、Access-Token 用&拼起来 多账号换行
+// export aima="63b263cxxx&088a0d3bxxx&eyJ0eXAiOxxx
+// 63b263cxxx&088a0d3bxxx&eyJ0eXAiOxxx"
+const {
+  getCurrDay,checkTime,Env,random
+} = require('./utils.js')
+const {sendNotify} = require('./sendNotify.js')
+const $ = Env("爱玛签到");
 const axios = require('axios')
+const userInfoList = $.getEnvKey('aima').split('\n')
+if(!userInfoList.length){
+  throw new Error('未找到ck')
+}
+console.log(`获取到${userInfoList.length}个ck`);
 
-const userInfoList =[
-  {
-    userId: '138xxxx',
-    'Sign':'63b263cxxx',
-    'TraceLog-Id':"088a0d3bxxx",
-    'Access-Token':'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.xxxxx'
-  },
-  {
-    userId: '138xxxx',
-    'Sign':'63b263cxxx',
-    'TraceLog-Id':"088a0d3bxxx",
-    'Access-Token':'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.xxxxx'
-  },
-  {
-    userId: '138xxxx',
-    'Sign':'1350exxxx',
-    'TraceLog-Id':"088a0d3bxxx",
-    'Access-Token':'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.xxxxx'
-  },
-]
 const baseUrl = 'https://scrm.aimatech.com/aima/wxclient/mkt/activities/sign:'
 const headers = {
   'Host': 'scrm.aimatech.com',
@@ -49,7 +42,6 @@ const url = {
 }
 const api = {
   join: (token) => {
-    delete token.userId
       return axios({
           url: baseUrl+'join',
           method: 'post',
@@ -61,7 +53,6 @@ const api = {
       })
   },
   search: (token) => {
-    delete token.userId
       return axios({
           url: baseUrl+'search',
           method: 'post',
@@ -73,49 +64,39 @@ const api = {
       })
   },
 }
-//随机生成1-300秒的延迟
-const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min)
-const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time))
-
-const getCurrDay = () => {
-    // 创建一个新的 Date 对象，它将包含当前的日期和时间
-    const currentDate = new Date();
-
-    // 获取当前日期的年、月、日
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // 月份从 0 开始，因此需要加 1
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    const hours = String(currentDate.getHours()).padStart(2, '0');
-    const minutes = String(currentDate.getMinutes()).padStart(2, '0');
-    const seconds = String(currentDate.getSeconds()).padStart(2, '0');
-    const milliseconds = String(currentDate.getMilliseconds());
-
-    // 将年、月、日拼接成所需格式的日期字符串
-    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}:${milliseconds}`;
-
-    return formattedDate
-}
 const processTokens = async () => {
+    let index = 0
+    const randomTime = random(1, 300)
+    console.log('随机延迟：',randomTime + '秒');
+    await $.wait(randomTime*1000)
     for (const token of userInfoList) {
       try {
-        const randomTime = random(1, 300)
-        console.log('随机延迟：',randomTime);
-        await sleep(randomTime*1000)
-        console.log('当前用户：',token.userId);
-        const {data} = await api.join(token)
+        $.log('')
+        index++
+        const tokenList = token.split('&')
+        const params = {
+              'Sign':tokenList[0],
+              'TraceLog-Id':tokenList[1],
+              'Access-Token':tokenList[2]
+        }
+        $.log(`当前用户：【${index}】`);
+        const {data} = await api.join(params)
         if(data.code===200){
-          console.log('签到信息：签到成功！，获得',data?.content?.point+'积分');
+          $.log(`签到信息：签到成功！，获得${data?.content?.point}积分`);
         }else{
-          console.log('签到信息：',data?.chnDesc);
+          $.log(`签到信息：${data?.chnDesc}`);
         }
         await sleep(2000)
-        const {data:{content:{signed}}} = await api.search(token)
-        console.log('连续签到天数：',signed);
+        const {data:{content:{signed}}} = await api.search(params)
+        $.log(`连续签到天数：${signed}`);
         await sleep(3500)
       } catch (error) {
-        console.error(`处理时发生错误：`, error);
+        $.logErr(error.toString());
       }
     }
+    $.log('')
+    await sendNotify('爱玛签到', $.logs.join('<br>'))
+    $.done()
   };
   
   processTokens()
