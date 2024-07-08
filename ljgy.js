@@ -1,4 +1,5 @@
 // cron: 15 9,16 * * *
+// const $ = new Env("丽璟国韵");
 // 填写账号&密码  多账号换行
 // export ljgy="130xxxxxx&xxxxx
 // 130xxxxxx&xxxxx"
@@ -6,7 +7,7 @@ const {
   getCurrDay,checkTime,Env,random
 } = require('./utils.js')
 const {sendNotify} = require('./sendNotify.js')
-const $ = Env("丽璟国韵");
+const $ = new Env("丽璟国韵");
 const axios = require('axios')
 const userInfoList = $.getEnvKey('ljgy').split('\n')
 if(!userInfoList.length||userInfoList[0]===''){

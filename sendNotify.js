@@ -1,4 +1,5 @@
 /*
+ * cron: 1 *
  * sendNotify 推送通知功能
  * @param text 通知头
  * @param desp 通知体

@@ -6,7 +6,7 @@ const {
   getCurrDay,checkTime,Env,random
 } = require('./utils.js')
 const {sendNotify} = require('./sendNotify.js')
-const $ = Env("7.5水");
+const $ = new Env("7.5水签到");
 const axios = require('axios')
 const userInfoList = $.getEnvKey('water75').split('\n')
 if(!userInfoList.length||userInfoList[0]===''){

@@ -1,4 +1,5 @@
 // cron: 16 7,18 * * *
+// const $ = new Env("瓶子星球签到");
 // 抓header 中的Authorization 多账号换行
 // export pzxq="Authorization
 // Authorization"
@@ -6,7 +7,7 @@ const {
   getCurrDay,checkTime,Env,random
 } = require('./utils.js')
 const {sendNotify} = require('./sendNotify.js')
-const $ = Env("瓶子星球签到");
+const $ = new Env("瓶子星球签到");
 const axios = require('axios')
 const userInfoList = $.getEnvKey('pzxq').split('\n')
 if(!userInfoList.length||userInfoList[0]===''){

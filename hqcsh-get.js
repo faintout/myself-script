@@ -1,3 +1,4 @@
+// cron: 40 59 17 * * *
 const axios = require('axios')
 const fetch = require('node-fetch');
 const https = require('https');
@@ -6,7 +7,7 @@ const {sendNotify} = require('./sendNotify.js')
 const {
 sleep,getCurrDay,checkTime,Env
 } = require('./utils.js')
-const $ = Env('好奇车抢红包')
+const $ = new Env('好奇车抢红包')
 const userInfoList = $.getEnvKey('hqcshck').split('&')
 if(!userInfoList.length||userInfoList[0]===''){
   throw new Error('未找到ck')
