@@ -49,7 +49,7 @@ const api = {
             ...headers,
             ...token
           },
-          data:{"activityId":"100000893","activitySceneId":null}
+          data:{"activityId":"100000915","activitySceneId":null}
       })
   },
   search: (token) => {
@@ -60,7 +60,17 @@ const api = {
             ...headers,
             ...token
           },
-          data:{"activityId":"100000893"}
+          data:{"activityId":"100000915"}
+      })
+  },
+  userInfo: (token) => {
+      return axios({
+          url: 'https://scrm.aimatech.com/aima/wxclient/member/IndexInfo',
+          method: 'get',
+          headers:{
+            ...headers,
+            ...token
+          },
       })
   },
 }
@@ -79,17 +89,23 @@ const processTokens = async () => {
               'TraceLog-Id':tokenList[1],
               'Access-Token':tokenList[2]
         }
-        $.log(`当前用户：【${index}】`);
+        const {data:{content:{mobile}}} = await api.userInfo(params)
+        if(!mobile){
+          $.log(`账号【${index}】登录失效`)
+          $.log('')
+          continue;
+        }
+        $.log(`账号【${index}】 当前用户：【${mobile}】`);
         const {data} = await api.join(params)
         if(data.code===200){
-          $.log(`签到信息：签到成功！，获得${data?.content?.point}积分`);
+          $.log(`账号【${index}】 签到信息：签到成功！，获得${data?.content?.point}积分`);
         }else{
-          $.log(`签到信息：${data?.chnDesc}`);
+          $.log(`账号【${index}】 签到信息：${data?.chnDesc}`);
         }
-        await sleep(2000)
+        await $.wait(2000)
         const {data:{content:{signed}}} = await api.search(params)
-        $.log(`连续签到天数：${signed}`);
-        await sleep(3500)
+        $.log(`账号【${index}】 连续签到天数：${signed}`);
+        await $.wait(3500)
       } catch (error) {
         $.logErr(error.toString());
       }
