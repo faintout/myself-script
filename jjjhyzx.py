@@ -108,6 +108,8 @@ class RUN:
         Log(f'\n====== {act_name} ======')
         url = f"{self.baseUrl}zanmall_diy/ma/personal/user/info"
         response = self.make_request(url,'get')
+        if  response== None:
+            return False
         # print(response)
         if response.get('success', False):
             data = response.get('data', {})
@@ -131,6 +133,8 @@ class RUN:
         }
         url = f"{self.baseUrl}zanmall_diy/ma/invitation/invitee/invited"
         response = self.make_request(url,data=json_data)
+        if  response== None:
+            return False
         if response.get('success', False):
             # print(f'> {act_name}成功！✅')
             return True
@@ -143,6 +147,8 @@ class RUN:
         Log(f'\n====== {act_name} ======')
         url = f"{self.baseUrl}zanmall_diy/ma/client/dailyHealthCheckIn/list"
         response = self.make_request(url,'get')
+        if  response== None:
+            return False
         if response.get('success', False):
             data = response.get('data', {})
             for task in data:
@@ -166,6 +172,8 @@ class RUN:
         url = f'{self.baseUrl}zanmall_diy/ma/client/dailyHealthCheckIn/signTask'
         json_data = f'type={type}'
         response = self.make_request(url,'post',params=json_data)
+        if  response== None:
+            return False
         if response.get('success', False):
             data = response.get('data', {})
             status = data.get('status', False)
@@ -192,6 +200,8 @@ class RUN:
             }
         }
         response = self.make_request(url,'post',data=json_data)
+        if  response== None:
+            return False
         if response.get('success', False):
             data = response.get('data', {})
             point = data.get('point', '')
@@ -210,7 +220,9 @@ class RUN:
         Log(f'\n====== {act_name} ======')
         url = f"{self.baseUrl}zanmall_diy/ma/personal/point/pointInfo"
         response = self.make_request(url,'get')
-        if response.get('success', False):
+        if  response== None:
+            return False
+        if  response.get('success', False):
             data = response.get('data', {})
             Log(f'> {act_name}成功！✅')
             Log(f'> 当前积分：【{data}】')

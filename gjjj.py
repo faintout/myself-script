@@ -186,7 +186,7 @@ class RUN:
         url = 'https://mc.kukahome.com/integral-server/scenePoint/scene/point'
         data={
             "scene":"sign",
-            "memberId":5242604,
+            "memberId":self.membershipId,
             "brandCode":"K001",
             "identityType":"mobile",
             "identityValue":self.mobile,

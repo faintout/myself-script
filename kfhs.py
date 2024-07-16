@@ -97,6 +97,12 @@ class RUN:
                     parsed_date = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S').date()
                     if parsed_date == current_date:
                         print(f"今日已签到，当前积分：【{memberBalance}】")
+                    else:
+                        print("今日未签到")
+                        wait_time = random.randint(1000, 10000) / 1000.0  # 转换为秒
+                        time.sleep(wait_time)
+                        print('随机延时1-10秒执行签到')
+                        self.dailySign()
                 else:
                     print("今日未签到")
                     wait_time = random.randint(1000, 10000) / 1000.0  # 转换为秒

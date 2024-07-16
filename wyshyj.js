@@ -20,7 +20,7 @@ const notify = $.isNode() ? require('./sendNotify') : '';
 const Notify = 1 		//0为关闭通知,1为打开通知,默认为1
 // const JSEncrypt = require('node-jsencrypt');
 const axios = require('axios');
-const parser = require("@babel/parser");
+// const parser = require("@babel/parser");
 const fs = require('fs');
 const path = require('path');
 const xpath = require('xpath')
@@ -83,23 +83,6 @@ UserCookieArr = ENV_SPLIT(UserCookie)
             console.log(`未定义${ENV_NAME}变量`)
             process.exit();
         } else {
-            // 版本检测
-            await getVersion();
-            Log(`\n 脚本执行✌北京时间(UTC+8)：${new Date(new Date().getTime() + new Date().getTimezoneOffset() * 60 * 1000 + 8 * 60 * 60 * 1000).toLocaleString()} `)
-        console.log(`\n================ 共找到 【${UserCookieArr.length}】 个账号 ================ \n================ 版本对比检查更新 ================`);
-        if (await compareVersions(local_version, APP_CONFIG['NEW_VERSION'])){
-                Log(`\n 当前版本：${local_version}`)
-                Log(`\n 最新版本：${APP_CONFIG['NEW_VERSION']}`)
-                if (SCRIPT_UPDATE==true){
-                    console.log('开始更新脚本')
-                    const fileUrl = `https://github.com/CHERWING/CHERWIN_SCRIPTS/raw/main/${ENV_NAME}.js`;
-                    const downloadPath = `./${ENV_NAME}.js`;
-                    downloadFile(fileUrl, downloadPath)
-                }
-
-        }else{
-            console.log(`版本信息：${local_version} ，已是最新版本无需更新开始执行脚本`)
-        }
             for (let index = 0; index < UserCookieArr.length; index++) {
                 one_msg = ''
                 let send_UID = ''
@@ -476,7 +459,7 @@ async function getMemberInfo(timeout = 2000) {
                 Connection: 'keep-alive',
                 'userId': userId,
                 'token': userToken,
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) XWEB/9129',
+                'User-Agent': getUA(),
                 Referer: 'https://servicewechat.com/wx91a054c39722497e/59/page-frame.html'
             },
         };
@@ -534,7 +517,7 @@ async function get_SING_URL(timeout = 2000) {
                 Connection: 'keep-alive',
                 'userId': userId,
                 'token': userToken,
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) XWEB/9129',
+                'User-Agent': getUA(),
                 Referer: 'https://servicewechat.com/wx91a054c39722497e/59/page-frame.html'
             },
         };
@@ -900,6 +883,7 @@ function delay() {
  * @returns {*}
  */
 function getUA() {
+    return 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090b13)XWEB/11065'
     $.UUID = randomString(40)
     const buildMap = {
         "167814": `10.1.4`,
