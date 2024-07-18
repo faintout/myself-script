@@ -15,7 +15,7 @@ hostname = %APPEND% www.wandawic.com
 [Script]
 万达智慧商业² = type=http-response,pattern=^https?:\/\/www\.wandawic\.com\/api\/foreground\/loginregister\/queryUser,requires-body=1,max-size=0,binary-body-mode=0,timeout=30,script-path=https://raw.githubusercontent.com/leiyiyan/resource/main/script/wdzhsy/wdzhsy.js,script-update-interval=0
 
-万达智慧商业 = type=cron,cronexp=30 9 * * *,timeout=60,script-path=https://raw.githubusercontent.com/leiyiyan/resource/main/script/wdzhsy/wdzhsy.js,script-update-interval=0
+
 
 ------------------- Loon 配置 -------------------
 
@@ -25,7 +25,6 @@ hostname = www.wandawic.com
 [Script]
 http-response ^https?:\/\/www\.wandawic\.com\/api\/foreground\/loginregister\/queryUser tag=万达智慧商业²,script-path=https://raw.githubusercontent.com/leiyiyan/resource/main/script/wdzhsy/wdzhsy.js,requires-body=1
 
-cron "30 9 * * *" script-path=https://raw.githubusercontent.com/leiyiyan/resource/main/script/wdzhsy/wdzhsy.js,tag=万达智慧商业,enable=true
 
 --------------- Quantumult X 配置 ---------------
 
@@ -36,15 +35,11 @@ hostname = www.wandawic.com
 ^https?:\/\/www\.wandawic\.com\/api\/foreground\/loginregister\/queryUser url script-response-body https://raw.githubusercontent.com/leiyiyan/resource/main/script/wdzhsy/wdzhsy.js
 
 [task_local]
-30 9 * * * https://raw.githubusercontent.com/leiyiyan/resource/main/script/wdzhsy/wdzhsy.js, tag=万达智慧商业, img-url=https://raw.githubusercontent.com/leiyiyan/resource/main/icons/wdzhsy.png, enabled=true
+https://raw.githubusercontent.com/leiyiyan/resource/main/script/wdzhsy/wdzhsy.js, tag=万达智慧商业, img-url=https://raw.githubusercontent.com/leiyiyan/resource/main/icons/wdzhsy.png, enabled=true
 
 ------------------ Stash 配置 ------------------
 
-cron:
-  script:
-    - name: 万达智慧商业
-      cron: 34 8,18 * * *
-      timeout: 10
+
 
 http:
   mitm:
