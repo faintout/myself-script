@@ -7,6 +7,8 @@
 填入token,多账号换行或&
 自行抓包token
 自动抓包软群文件有
+# cron: 0 7,21 * * *
+# const $ = new Env("星火学院");
 '''
 project = 'fireAcademy'
 import lzma, base64

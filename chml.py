@@ -4,6 +4,8 @@
 #有问题联系3288588344
 #频道：https://pd.qq.com/s/672fku8ge
 
+# cron: 0 7,21 * * *
+# const $ = new Env("长虹美菱");
 
 
 

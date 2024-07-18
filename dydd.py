@@ -5,7 +5,8 @@ import os
 import requests
 import time
 import hashlib
-
+# cron: 15 8,17 * * *
+# const $ = new Env("第一电动");
 # 获取青龙面板环境变量 dydd
 dydd = os.environ.get('dydd', '')
 

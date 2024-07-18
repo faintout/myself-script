@@ -4,7 +4,8 @@
 分隔符#多账户换行
 
 
-
+# cron: 0 7,21 * * *
+# const $ = new Env("酷瓜");
 有问题联系3288588344
 频道：https://pd.qq.com/s/672fku8ge
  
