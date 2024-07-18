@@ -1,3 +1,5 @@
+# cron: 16 7 * * *
+# const $ = new Env("新东方任务查询");
 import requests
 import time
 import random

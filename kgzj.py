@@ -1,7 +1,7 @@
 # !/usr/bin/python3
 # -- coding: utf-8 --
 # -------------------------------
-# cron "30 9 * * *" script-path=xxx.py,tag=匹配cron用
+# cron "22 8,17 * * *" script-path=xxx.py,tag=匹配cron用
 # const $ = new Env('宽哥之家小程序')
 
 import os

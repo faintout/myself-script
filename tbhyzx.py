@@ -1,7 +1,7 @@
 # !/usr/bin/python3
 # -- coding: utf-8 --
 # -------------------------------
-# ✨ 推荐cron：1 8 * * *
+# ✨ 推荐cron：23 8,17 * * *
 # ✨✨✨ @Author CHERWIN✨✨✨
 # -------------------------------
 # cron "0 6 * * *" script-path=xxx.py,tag=匹配cron用

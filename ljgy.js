@@ -1,4 +1,4 @@
-// cron: 15 9,16 * * *
+// cron: 15 8,17 * * *
 // const $ = new Env("丽璟国韵");
 // 填写账号&密码  多账号换行
 // export ljgy="130xxxxxx&xxxxx

@@ -1,6 +1,6 @@
 # !/usr/bin/python3
 # -- coding: utf-8 --
-# cron "5 10 * * *" script-path=xxx.py,tag=匹配cron用
+# cron "25 8,17 * * *" script-path=xxx.py,tag=匹配cron用
 # const $ = new Env('劲友家小程序')
 import base64
 import json
@@ -804,4 +804,4 @@ export SCRIPT_UPDATE = 'False' 关闭脚本自动更新，默认开启
         for index, infos in enumerate(tokens):
             run_result = RUN(infos, index).main()
             if not run_result: continue
-        # if send: send(f'{APP_NAME}挂机通知', send_msg + TIPS_HTML)
+        if send: send(f'{APP_NAME}挂机通知', send_msg + TIPS_HTML)

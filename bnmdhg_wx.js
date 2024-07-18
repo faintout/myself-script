@@ -1,4 +1,4 @@
-// cron: 0 9,16 * * *
+// cron: 12 8,17 * * *
 // const $ = new Env("巴奴火锅小程序");
 const _0x58a094 = new _0x313dd5("巴奴火锅小程序"),
   _0x38bb5b = "bnmdhg",

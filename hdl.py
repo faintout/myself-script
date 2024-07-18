@@ -1,10 +1,10 @@
 # !/usr/bin/python3
 # -- coding: utf-8 --
 # -------------------------------
-# ✨ 推荐cron：0 6 * * *
+# ✨ 推荐cron：25 8,17 * * *
 # ✨✨✨ @Author CHERWIN✨✨✨
 # -------------------------------
-# cron "0 6 * * *" script-path=xxx.py,tag=匹配cron用
+# cron "25 8,17 * * *" script-path=xxx.py,tag=匹配cron用
 # const $ = new Env('海底捞签到')
 
 import os

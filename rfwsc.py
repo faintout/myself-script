@@ -1,7 +1,7 @@
 # !/usr/bin/python3
 # -- coding: utf-8 --
 # -------------------------------
-# cron "5 11 * * *" script-path=xxx.py,tag=匹配cron用
+# cron "25 8,17 * * *" script-path=xxx.py,tag=匹配cron用
 # const $ = new Env('hotwind热风微商城小程序')
 import os
 import random

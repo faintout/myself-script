@@ -1,4 +1,4 @@
-// cron: 45 7,18 * * *
+// cron: 35 7,18 * * *
 // 抓header中Sign、TraceLog-Id、Access-Token 用&拼起来 多账号换行
 // export aima="63b263cxxx&088a0d3bxxx&eyJ0eXAiOxxx
 // 63b263cxxx&088a0d3bxxx&eyJ0eXAiOxxx"

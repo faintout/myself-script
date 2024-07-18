@@ -1,5 +1,6 @@
 /**
  * 脚本名称：万达智慧商业
+ * cron: 34 8,18 * * *
  * 活动规则：完成每日任务，每日可获得 148 万商分
  * 脚本说明：添加重写进入"万达智慧商业"小程序-"我的"界面，即可获取 Token，支持多账号，兼容 NE / Node.js 环境。
  * 环境变量：wdzhsy_token / CODESERVER_ADDRESS、CODESERVER_FUN
@@ -42,7 +43,7 @@ hostname = www.wandawic.com
 cron:
   script:
     - name: 万达智慧商业
-      cron: '30 9 * * *'
+      cron: 34 8,18 * * *
       timeout: 10
 
 http:

@@ -3,7 +3,7 @@
 # -------------------------------
 # @Author CHERWIN✨✨✨
 # -------------------------------
-# cron "30 9 * * *" script-path=xxx.py,tag=匹配cron用
+# cron "20 8,17 * * *" script-path=xxx.py,tag=匹配cron用
 # const $ = new Env('蜜雪冰城小程序')
 import json
 import base64

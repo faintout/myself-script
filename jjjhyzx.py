@@ -4,7 +4,7 @@
 # 邀请码：https://github.com/CHERWING/CHERWIN_SCRIPTS/assets/160421895/6dbacc8f-1c1a-47cf-9760-327385e85a0f
 # ✨请走作者邀请码支持开发，谢谢！✨
 # 定时至少4次
-# cron "5 7,11,15,20 * * *" script-path=xxx.py,tag=匹配cron用
+# cron "5,30 7,9,11,13,15,17,20,22 * * *" script-path=xxx.py,tag=匹配cron用
 # const $ = new Env('999会员中心小程序')
 import base64
 import json

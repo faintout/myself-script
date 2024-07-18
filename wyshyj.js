@@ -4,7 +4,7 @@
  * 项目抓包：抓miniprogram.dingwei.netease.com下的userId @ token填入变量
  * 项目变量：WYSHYJS
  * 项目定时：每天9点运行
- * cron: 0 9 * * *
+ * cron: 0 9,17 * * *
  * github仓库：https://github.com/CHERWING/CHERWIN_SCRIPTS
  * @Author CHERWIN
  *

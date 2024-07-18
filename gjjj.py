@@ -3,7 +3,7 @@
 # -------------------------------
 # ✨✨✨ @Author CHERWIN✨✨✨
 # -------------------------------
-# cron "1 9 * * *" script-path=xxx.py,tag=匹配cron用
+# cron "22 8,17 * * *" script-path=xxx.py,tag=匹配cron用
 # const $ = new Env('顾家家居小程序')
 import os
 import random
