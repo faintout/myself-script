@@ -63,6 +63,28 @@ const api = {
           data:{"activityId":"100000915"}
       })
   },
+  luckyJoin: (token) => {
+      return axios({
+          url: 'https://scrm.aimatech.com/aima/wxclient/mkt/activities/lucky:join',
+          method: 'post',
+          headers:{
+            ...headers,
+            ...token
+          },
+          data:{"activityId":100000924,"preview":false,"mobile":"","code":"","activitySceneId":null,"codeType":1}
+      })
+  },
+  luckySearch: (token) => {
+      return axios({
+          url: 'https://scrm.aimatech.com/aima/wxclient/mkt/activities/lucky:search',
+          method: 'post',
+          headers:{
+            ...headers,
+            ...token
+          },
+          data:{"activityId":100000924,"preview":false}
+      })
+  },
   userInfo: (token) => {
       return axios({
           url: 'https://scrm.aimatech.com/aima/wxclient/member/IndexInfo',
@@ -105,6 +127,19 @@ const processTokens = async () => {
         await $.wait(2000)
         const {data:{content:{signed}}} = await api.search(params)
         $.log(`账号【${index}】 连续签到天数：${signed}`);
+
+        // 开始签到
+        const {data:{content:{availableJoinTimesDTO:{freeAvailableJoinTimes}}}} = await api.luckySearch(params)
+        $.log(`账号【${index}】 当前幸运抽奖次数为：${freeAvailableJoinTimes}`);
+        if(freeAvailableJoinTimes>0){
+          for(let i=0;i<freeAvailableJoinTimes;i++){
+            await $.wait(2000)
+            const {data:{content}} = await api.luckyJoin(params)
+            const actNameList = content.map(item=>item.actAwardName)
+            $.log(`账号【${index}】 幸运抽奖第${i+1}次：${actNameList.join(',')}`);
+            await $.wait(2000)
+          }
+        }
         await $.wait(3500)
       } catch (error) {
         $.logErr(error.toString());
