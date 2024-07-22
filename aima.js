@@ -8,6 +8,8 @@ const {
 const {sendNotify} = require('./sendNotify.js')
 const $ = new Env("爱玛签到");
 const axios = require('axios')
+let index = 0
+let adsList = []
 const userInfoList = $.getEnvKey('aima').split('\n')
 if(!userInfoList.length||userInfoList[0]===''){
   throw new Error('未找到ck')
@@ -63,7 +65,7 @@ const api = {
           data:{"activityId":"100000915"}
       })
   },
-  luckyJoin: (token) => {
+  luckyJoin: (token,activeId) => {
       return axios({
           url: 'https://scrm.aimatech.com/aima/wxclient/mkt/activities/lucky:join',
           method: 'post',
@@ -71,10 +73,10 @@ const api = {
             ...headers,
             ...token
           },
-          data:{"activityId":100000924,"preview":false,"mobile":"","code":"","activitySceneId":null,"codeType":1}
+          data:{"activityId":activeId,"preview":false,"mobile":"","code":"","activitySceneId":null,"codeType":1}
       })
   },
-  luckySearch: (token) => {
+  luckySearch: (token,activeId) => {
       return axios({
           url: 'https://scrm.aimatech.com/aima/wxclient/mkt/activities/lucky:search',
           method: 'post',
@@ -82,7 +84,7 @@ const api = {
             ...headers,
             ...token
           },
-          data:{"activityId":100000924,"preview":false}
+          data:{"activityId":activeId,"preview":false}
       })
   },
   userInfo: (token) => {
@@ -95,9 +97,91 @@ const api = {
           },
       })
   },
+  getAds: (token) => {
+      return axios({
+          url: 'https://scrm.aimatech.com/aima/wxclient/cms/ads ',
+          method: 'post',
+          headers:{
+            ...headers,
+            ...token
+          },
+          data:{"location":1,"adType":0,"status":2}
+      })
+  },
+}
+
+const getUserInfo = async (params) => {
+  const {data:{content:{mobile,vipMemberPointDTO:{pointValue}}}} = await api.userInfo(params)
+  if(!mobile){
+    $.log(`账号【${index}】登录失效`)
+    $.log('')
+    return false
+  }
+  $.log(`账号【${index}】 当前用户：【${mobile}】`);
+  $.log(`账号【${index}】 当前积分：【${pointValue}】`);
+  return true
+}
+
+const userSign = async (params) => {
+  const {data} = await api.join(params)
+  if(data.code===200){
+    $.log(`账号【${index}】 签到信息：签到成功！，获得${data?.content?.point}积分`);
+  }else{
+    $.log(`账号【${index}】 签到信息：${data?.chnDesc}`);
+  }
+}
+const luckyJoin = async (params) => {
+  !adsList.length&&await getAds(params)
+  for(let ads of adsList){
+    const {data:{content}} = await api.luckySearch(params,ads.activityId)
+    if(!content){
+      console.log(`账号【${index}】 当前抽奖活动【${ads.title}】为空，跳过该活动`)
+      continue;
+    }
+    const {activityBaseDTO:{name},availableJoinTimesDTO:{freeAvailableJoinTimes}} = content
+    $.log(`账号【${index}】 当前活动名称：${name}`);
+    $.log(`账号【${index}】 当前抽奖次数为：${freeAvailableJoinTimes}`);
+    if(freeAvailableJoinTimes>0){
+      for(let i=0;i<freeAvailableJoinTimes;i++){
+        await $.wait(2000)
+        const {data} = await api.luckyJoin(params,ads.activityId)
+        if(!data?.content||!data?.content?.length){
+          $.log(`账号【${index}】 抽奖错误：${data.chnDesc||JSON.stringify(data)}`);
+          continue
+        }
+        const actNameList = data.content.map(item=>item.actAwardName)
+        $.log(`账号【${index}】 抽奖第${i+1}次：${actNameList.join(',')}`);
+        await $.wait(2000)
+      }
+    }
+    await $.wait(2000)
+    
+  }
+}
+const matchActiveId = (link)=>{
+  const match = link.match(/activityId=(\d+)/);
+  return match?match[1]:''
+}
+const getAds = async (params)=>{
+  const {data:{recordList}} = await api.getAds(params)
+  adsList = recordList.filter(item=>matchActiveId(item.link)).map(item=>{
+    return {
+      activityId:matchActiveId(item.link),
+      title:item.title
+    }
+  })
+  adsList.push({
+    activityId:'100000924',
+    title:'每日抽奖'
+  })
+  console.log(`查询活动列表成功！当前活动列表：${adsList.map(item=>item.title).join(',')}`)
+
+}
+const searchSignDay = async (params) => {
+  const {data:{content:{signed}}} = await api.search(params)
+  $.log(`账号【${index}】 连续签到天数：${signed}`);
 }
 const processTokens = async () => {
-    let index = 0
     const randomTime = random(1, 300)
     console.log('随机延迟：',randomTime + '秒');
     await $.wait(randomTime*1000)
@@ -111,35 +195,16 @@ const processTokens = async () => {
               'TraceLog-Id':tokenList[1],
               'Access-Token':tokenList[2]
         }
-        const {data:{content:{mobile}}} = await api.userInfo(params)
-        if(!mobile){
-          $.log(`账号【${index}】登录失效`)
-          $.log('')
+        const userFlag = await getUserInfo(params)
+        if(!userFlag){
           continue;
         }
-        $.log(`账号【${index}】 当前用户：【${mobile}】`);
-        const {data} = await api.join(params)
-        if(data.code===200){
-          $.log(`账号【${index}】 签到信息：签到成功！，获得${data?.content?.point}积分`);
-        }else{
-          $.log(`账号【${index}】 签到信息：${data?.chnDesc}`);
-        }
+        await userSign(params);
         await $.wait(2000)
-        const {data:{content:{signed}}} = await api.search(params)
-        $.log(`账号【${index}】 连续签到天数：${signed}`);
+        await searchSignDay(params);
 
         // 开始签到
-        const {data:{content:{availableJoinTimesDTO:{freeAvailableJoinTimes}}}} = await api.luckySearch(params)
-        $.log(`账号【${index}】 当前幸运抽奖次数为：${freeAvailableJoinTimes}`);
-        if(freeAvailableJoinTimes>0){
-          for(let i=0;i<freeAvailableJoinTimes;i++){
-            await $.wait(2000)
-            const {data:{content}} = await api.luckyJoin(params)
-            const actNameList = content.map(item=>item.actAwardName)
-            $.log(`账号【${index}】 幸运抽奖第${i+1}次：${actNameList.join(',')}`);
-            await $.wait(2000)
-          }
-        }
+        await luckyJoin(params);
         await $.wait(3500)
       } catch (error) {
         $.logErr(error.toString());
