@@ -167,8 +167,9 @@ class _0x5026b8 extends _0x4c79d9 {
       const _0x2c8794 = {
         fn: "personal_info",
         method: "get",
-        "url": "https://webapi.qmai.cn/web/catering/crm/personal-info",
-        searchParams: _0x5ad3a8
+        // "url": "https://webapi.qmai.cn/web/catering/crm/personal-info",
+        "url": "https://webapi2.qmai.cn/web/catering2-apiserver/crm/personal-info?appid=wxafec6f8422cb357b",
+        // searchParams: _0x5ad3a8
       };
       let {
         result: _0x1f1cc3,
