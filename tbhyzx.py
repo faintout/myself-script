@@ -4,7 +4,7 @@
 # ✨ 推荐cron：23 8,17 * * *
 # ✨✨✨ @Author CHERWIN✨✨✨
 # -------------------------------
-# cron "0 6 * * *" script-path=xxx.py,tag=匹配cron用
+# cron "23 8,17 * * *" script-path=xxx.py,tag=匹配cron用
 # const $ = new Env('特步会员中心小程序签到')
 import json
 import os

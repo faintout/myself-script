@@ -1,7 +1,7 @@
 # !/usr/bin/python3
 # -- coding: utf-8 --
 #  （包含：甄稀冰淇淋，金典SATINE、活力伊利）
-# cron "5 9 * * *" script-path=xxx.py,tag=匹配cron用
+# cron "5 9,17 * * *" script-path=xxx.py,tag=匹配cron用
 # const $ = new Env('伊利系列小程序')
 import json
 import os

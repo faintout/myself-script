@@ -1,6 +1,7 @@
 # !/usr/bin/env python
 # -*-coding:utf-8 -*-
 # const $ = new Env("gobing签到");
+# cron: 35 7,18 * * *
 import requests
 import json
 import os
