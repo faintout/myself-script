@@ -1,8 +1,7 @@
 // cron: 15 8,17 * * *
-// 点击 我的-积分
-// 抓wscaccount/api/authorize/data.json header中的cookie 多账号换行
-// export mmx="Cookie
-// Cookie"
+// 抓 header中的Extra-Data中的sid 多账号换行
+// export mmx="YZxxxx
+// YZxxxx"
 const {
   getCurrDay,checkTime,Env,random
 } = require('./utils.js')
@@ -44,7 +43,7 @@ const api = {
             method: 'get',
             headers:{
               ...headers,
-              "Cookie":token
+              "Cookie":`KDTWEAPPSESSIONID=${token}`
             },
         })
     },
@@ -54,7 +53,7 @@ const api = {
           method: 'get',
           headers:{
             ...headers,
-            "Cookie":token
+            "Cookie":`KDTWEAPPSESSIONID=${token}`
           },
       })
   },
@@ -64,7 +63,7 @@ const api = {
             method: 'get',
             headers:{
               ...headers,
-              "Cookie":token
+              "Cookie":`KDTWEAPPSESSIONID=${token}`
             },
         })
     },
@@ -74,7 +73,7 @@ const api = {
             method: 'get',
             headers:{
               ...headers,
-              "Cookie":token
+              "Cookie":`KDTWEAPPSESSIONID=${token}`
             },
         })
     },
