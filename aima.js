@@ -10,6 +10,7 @@ const $ = new Env("爱玛签到");
 const axios = require('axios')
 let index = 0
 let adsList = []
+let signActivityId = 0
 const userInfoList = $.getEnvKey('aima').split('\n')
 if(!userInfoList.length||userInfoList[0]===''){
   throw new Error('未找到ck')
@@ -51,7 +52,7 @@ const api = {
             ...headers,
             ...token
           },
-          data:{"activityId":"100000915","activitySceneId":null}
+          data:{"activityId":signActivityId,"activitySceneId":null}
       })
   },
   search: (token) => {
@@ -62,7 +63,7 @@ const api = {
             ...headers,
             ...token
           },
-          data:{"activityId":"100000915"}
+          data:{"activityId":signActivityId}
       })
   },
   luckyJoin: (token,activeId) => {
@@ -108,6 +109,17 @@ const api = {
           data:{"location":1,"adType":0,"status":2}
       })
   },
+  receive_award: (token,activityAwardId,awardId) => {
+      return axios({
+          url: 'https://scrm.aimatech.com/aima/wxclient/mkt/activities/sign:receive_award',
+          method: 'post',
+          headers:{
+            ...headers,
+            ...token
+          },
+          data:{"activityId":signActivityId,"awardCount":1,activityAwardId,awardId,"awardType":4}
+      })
+  },
 }
 
 const getUserInfo = async (params) => {
@@ -121,7 +133,20 @@ const getUserInfo = async (params) => {
   $.log(`账号【${index}】 当前积分：【${pointValue}】`);
   return true
 }
+const receiveAward = async ({token,signed,signAwards}) => {
+  const receiveList = signAwards.filter(item=>item.signNum<=signed&&item.receiveStatus===0)
 
+  for(let award of receiveList){
+    await $.wait(2000)
+    const {awardName,activityAwardId,awardId} = award
+    const {data} = await api.receive_award(token,activityAwardId,awardId)
+    if(data.code===200){
+      $.log(`账号【${index}】 ${awardName} 领取成功`);
+    }else{
+      $.log(`账号【${index}】 ${awardName} 领取失败：${data?.chnDesc}`);
+    }
+  }
+}
 const userSign = async (params) => {
   const {data} = await api.join(params)
   if(data.code===200){
@@ -131,7 +156,6 @@ const userSign = async (params) => {
   }
 }
 const luckyJoin = async (params) => {
-  !adsList.length&&await getAds(params)
   for(let ads of adsList){
     const {data:{content}} = await api.luckySearch(params,ads.activityId)
     if(!content){
@@ -174,12 +198,15 @@ const getAds = async (params)=>{
     activityId:'100000924',
     title:'每日抽奖'
   })
+  const {activityId} = adsList.filter(ads=>ads.title.includes('签到'))[0]
+  signActivityId = activityId||0
   console.log(`查询活动列表成功！当前活动列表：${adsList.map(item=>item.title).join(',')}`)
 
 }
 const searchSignDay = async (params) => {
-  const {data:{content:{signed}}} = await api.search(params)
+  const {data:{content:{signed,signAwards}}} = await api.search(params)
   $.log(`账号【${index}】 连续签到天数：${signed}`);
+  return {signed,signAwards}
 }
 const processTokens = async () => {
     const randomTime = random(1, 300)
@@ -195,14 +222,15 @@ const processTokens = async () => {
               'TraceLog-Id':tokenList[1],
               'Access-Token':tokenList[2]
         }
+        !adsList.length&&await getAds(params)
         const userFlag = await getUserInfo(params)
         if(!userFlag){
           continue;
         }
         await userSign(params);
         await $.wait(2000)
-        await searchSignDay(params);
-
+        const searchData = await searchSignDay(params);
+        await receiveAward({...searchData,token:params});
         // 开始签到
         await luckyJoin(params);
         await $.wait(3500)
