@@ -358,7 +358,7 @@ script-providers:
       var result = await Request(opt);
       if (result?.code == '200' && result?.data) {
         const { total, records } = result?.data;
-        const random = Math.floor(Math.random() * total)
+        const random = Math.floor(Math.random() * (records?.length||total))
         const shopId = records[random].id;
         msg += `✅ 从${total}个商铺中随机获取一个商铺ID:${shopId}\n`;
         return shopId;
