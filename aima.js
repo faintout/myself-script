@@ -120,18 +120,29 @@ const api = {
           data:{"activityId":signActivityId,"awardCount":1,activityAwardId,awardId,"awardType":4}
       })
   },
+  wxShare: (token,activeId) => {
+      return axios({
+          url: 'https://scrm.aimatech.com/aima/wxclient/mkt/activities/share',
+          method: 'post',
+          headers:{
+            ...headers,
+            ...token
+          },
+          data:{"activityId":activeId}
+      })
+  },
 }
 
 const getUserInfo = async (params) => {
-  const {data:{content:{mobile,vipMemberPointDTO:{pointValue}}}} = await api.userInfo(params)
+  const {data:{content:{mobile,id,vipMemberPointDTO:{pointValue}}}} = await api.userInfo(params)
   if(!mobile){
     $.log(`账号【${index}】登录失效`)
     $.log('')
-    return false
+    return null
   }
   $.log(`账号【${index}】 当前用户：【${mobile}】`);
   $.log(`账号【${index}】 当前积分：【${pointValue}】`);
-  return true
+  return id
 }
 const receiveAward = async ({token,signed,signAwards}) => {
   const receiveList = signAwards.filter(item=>item.signNum<=signed&&item.receiveStatus===0)
@@ -155,6 +166,15 @@ const userSign = async (params) => {
     $.log(`账号【${index}】 签到信息：${data?.chnDesc}`);
   }
 }
+const wxShare = async (params,activeId,memberId) => {
+  const {data} = await api.wxShare(params,activeId,memberId)
+  if(data.code===200){
+    $.log(`账号【${index}】 wx分享成功`);
+  }else{
+    $.log(`账号【${index}】 wx分享【${activeId}】失败：${data?.chnDesc}`);
+  }
+}
+
 const luckyJoin = async (params) => {
   for(let ads of adsList){
     const {data:{content}} = await api.luckySearch(params,ads.activityId)
@@ -162,11 +182,14 @@ const luckyJoin = async (params) => {
       console.log(`账号【${index}】 当前抽奖活动【${ads.title}】为空，跳过该活动`)
       continue;
     }
-    const {activityBaseDTO:{name},availableJoinTimesDTO:{freeAvailableJoinTimes}} = content
+    //完成wx分享获取次数
+    await wxShare(params,ads.activityId)
+    await $.wait(2000)
+    const {activityBaseDTO:{name},availableJoinTimesDTO:{maxAvailableJoinTimes}} = content
     $.log(`账号【${index}】 当前活动名称：${name}`);
-    $.log(`账号【${index}】 当前抽奖次数为：${freeAvailableJoinTimes}`);
-    if(freeAvailableJoinTimes>0){
-      for(let i=0;i<freeAvailableJoinTimes;i++){
+    $.log(`账号【${index}】 当前抽奖次数为：${maxAvailableJoinTimes}`);
+    if(maxAvailableJoinTimes>0){
+      for(let i=0;i<maxAvailableJoinTimes;i++){
         await $.wait(2000)
         const {data} = await api.luckyJoin(params,ads.activityId)
         if(!data?.content||!data?.content?.length){
@@ -223,8 +246,8 @@ const processTokens = async () => {
               'Access-Token':tokenList[2]
         }
         !adsList.length&&await getAds(params)
-        const userFlag = await getUserInfo(params)
-        if(!userFlag){
+        const id = await getUserInfo(params)
+        if(!id){
           continue;
         }
         await userSign(params);
