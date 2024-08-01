@@ -81,6 +81,9 @@ let IGOT_PUSH_KEY = '';
 let PUSH_PLUS_TOKEN = '';
 let PUSH_PLUS_USER = '';
 
+//息知
+let XZ_KEY = '';
+
 //==========================云端环境变量的判断与接收=========================
 if (process.env.GOBOT_URL) {
   GOBOT_URL = process.env.GOBOT_URL;
@@ -102,6 +105,9 @@ if (process.env.QQ_SKEY) {
 
 if (process.env.QQ_MODE) {
   QQ_MODE = process.env.QQ_MODE;
+}
+if (process.env.XZ_KEY) {
+  XZ_KEY = process.env.XZ_KEY
 }
 
 if (process.env.BARK_PUSH) {
@@ -187,6 +193,7 @@ async function sendNotify(
   await Promise.all([
     serverNotify(text, desp), //微信server酱
     pushPlusNotify(text, desp), //pushplus(推送加)
+    xzNotify(text, desp), //息知
   ]);
   //由于上述两种微信通知需点击进去才能查看到详情，故text(标题内容)携带了账号序号以及昵称信息，方便不点击也可知道是哪个京东哪个活动
   text = text.match(/.*?(?=\s?-)/g) ? text.match(/.*?(?=\s?-)/g)[0] : text;
@@ -786,6 +793,52 @@ function pushPlusNotify(text, desp) {
                 `push+发送${
                   PUSH_PLUS_USER ? '一对多' : '一对一'
                 }通知消息失败：${data.msg}\n`,
+              );
+            }
+          }
+        } catch (e) {
+          $.logErr(e, resp);
+        } finally {
+          resolve(data);
+        }
+      });
+    } else {
+      resolve();
+    }
+  });
+}
+function xzNotify(text, desp) {
+  return new Promise((resolve) => {
+    if (XZ_KEY) {
+      desp = desp.replace(/<br>|[\n\r]/g, '\n\n'); // 默认为html, 不支持plaintext
+      const body = {
+        title: `${text}`,
+        content: `${desp}`,
+      };
+      const options = {
+        url: `https://xizhi.qqoq.net/${XZ_KEY}.send`,
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': ' application/json',
+        },
+        timeout,
+      };
+      $.post(options, (err, resp, data) => {
+        try {
+          if (err) {
+            console.log(
+              `息知发送通知消息失败！！\n`,
+            );
+            console.log(err);
+          } else {
+            data = JSON.parse(data);
+            if (data.code === 200) {
+              console.log(
+                `息知发送通知消息完成。\n`,
+              );
+            } else {
+              console.log(
+                `息知发送通知消息失败：${data.msg}\n`,
               );
             }
           }
