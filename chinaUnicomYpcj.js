@@ -1,4 +1,4 @@
-// cron 7,8 * * * 
+// cron: 5 7,8 * *
 // new Env("联通云盘抽奖")
 // 需要在联通APP中选择退出登录-切换账号登录, 捉下面这个包
 // https://m.client.10010.com/mobileService/onLine.htm
