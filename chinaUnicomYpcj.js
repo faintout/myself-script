@@ -4,6 +4,12 @@
 // https://m.client.10010.com/mobileService/onLine.htm
 // 把请求体(body)里面的token_online参数填到变量 chinaUnicomCookie 里, 多账号换行或&或@隔开:
 // export chinaUnicomCookie="a3e4c1ff25da2xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+const consoleold = console.log
+let  _0x32251d = ""
+console.log = (...args)=>{
+  _0x32251d = _0x32251d.concat(args.join(' ')+'\r\n')
+  consoleold(...args)
+}
 const _0x167f87 = new _0x22eb2a("联通云盘抽奖"),
   _0x1a1711 = 1,
   _0x60cff9 = 0,
@@ -14,7 +20,6 @@ const _0x167f87 = new _0x22eb2a("联通云盘抽奖"),
   splitArr = ["\n",'@',"&"]
   _0x1e97bc = _0x497e42();
 let _0x5c3e0b = process.env.chinaUnicomCookie,
-  _0x32251d = "",
   _0x3bc1c7 = "";
 ckArr = _0x5c3e0b.split(splitArr.filter(split=>_0x5c3e0b.includes(split))[0]);
 _0x22544("【debug】 这是你的账号数组:\n " + ckArr);
