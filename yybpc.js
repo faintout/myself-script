@@ -4,7 +4,7 @@
  *有问题联系3288588344
  *频道：https://pd.qq.com/s/672fku8ge
  * vx爷爷不泡茶
- * cron "10 8 * * *" yybpc.js
+ * cron " 10 8,18 * * *" yybpc.js
  * export yybpc= qm-user-token 多账号换行或者#分隔
  */
 // ============================================================================================================
@@ -16,49 +16,8 @@ const Notify = 1
 const debug = 0
 let scriptVersionNow = "1.0.0";
 let msg = "";
-// ==================================异步顺序==============================================================================
-!(async () => {
-    await getNotice();  //远程通知
-    await getVersion("yang7758258/ohhh154@main/yybpc.js");
-    await main();//主函数
-    await SendMsg(msg); //发送通知
 
-})()
-    .catch((e) => $.logErr(e))
-    .finally(() => $.done());
-//==================================脚本入口函数main()==============================================================
 
-async function main() {
-    if (env == '') {
-        //没有设置变量,直接退出
-        console.log(`没有填写变量,请查看脚本说明: ${env_name}`)
-        return
-    }
-    let user_ck = env.split('\n')
-    DoubleLog(`\n========= 共找到 ${user_ck.length} 个账号 =========`);
-    let index = 1 //用来给账号标记序号, 从1开始
-    for (let ck of user_ck) {
-        if (!ck) continue //跳过空行
-        let ck_info = ck.split('&')
-        let Authorization = ck_info[0] 
-        //let uid = ck_info[0]
-        //let deviceCode = ck_info[2]
-        let user = {
-            index: index,
-            Authorization, 
-            //uid,
-            //deviceCode,
-        }
-        index = index + 1 //每次用完序号+1
-        //开始账号任务
-        let Run = new run();
-        await Run.userTask(user)
-        //每个账号之间等1~5秒随机时间
-        let rnd_time = Math.floor(Math.random() * 4000) + 1000
-        console.log(`随机等待${rnd_time / 1000}秒...`)
-        await $.wait(rnd_time)
-    }
-}
 // ======================================开始任务=========================================
 class run {
     constructor(user) {
@@ -69,6 +28,8 @@ async  userTask(user) {
     await this.SignTask(user)
     await wait(2)
     await this.account(user)
+    await wait(3)
+    await this.accountDay(user)
 }
 // =============================================================================================================================
 //签到
@@ -136,7 +97,84 @@ async  account(user) {
         console.log(e);
     }
 }
+async  accountDay(user) {
+    try {
+        DoubleLog(`🕊账号[${user.index}] 开始查询签到天数...`);
+        let urlObject = {
+            method: 'post',
+            url: `https://webapi.qmai.cn/web/cmk-center/sign/userSignStatistics`,
+            headers: {
+                "qm-from": "wechat",
+                "qm-user-token": user.Authorization,
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) XWEB/9129',
+            },
+            data: {
+                "activityId":"983701274523176960",
+                "appid": "wx3423ef0c7b7f19af"
+            }
+        }
+        //
+        let { data: result} = await axios.request(urlObject)
+        //console.log(result);
+        if (result?.status == true) {
+            //打印签到结果
+            DoubleLog(`🕊账号[${user.index}] 签到天数[${result.data.signDays}]🎉`);
+        }else {
+            DoubleLog(`🕊账号[${user.index}] 签到天数查询失败:${result.message}🚫`)
+        }
+        
+        
+    } catch (e) {
+        console.log(e);
+    }
 }
+}
+// ==================================异步顺序==============================================================================
+!(async () => {
+    // await getNotice();  //远程通知
+    // await getVersion("yang7758258/ohhh154@main/yybpc.js");
+    await main();//主函数
+    await SendMsg(msg); //发送通知
+
+})()
+    .catch((e) => $.logErr(e))
+    .finally(() => $.done());
+
+
+//==================================脚本入口函数main()==============================================================
+
+async function main() {
+    if (env == '') {
+        //没有设置变量,直接退出
+        console.log(`没有填写变量,请查看脚本说明: ${env_name}`)
+        return
+    }
+    let user_ck = env.split('\n')
+    DoubleLog(`\n========= 共找到 ${user_ck.length} 个账号 =========`);
+    let index = 1 //用来给账号标记序号, 从1开始
+    for (let ck of user_ck) {
+        if (!ck) continue //跳过空行
+        let ck_info = ck.split('&')
+        let Authorization = ck_info[0] 
+        //let uid = ck_info[0]
+        //let deviceCode = ck_info[2]
+        let user = {
+            index: index,
+            Authorization, 
+            //uid,
+            //deviceCode,
+        }
+        index = index + 1 //每次用完序号+1
+        //开始账号任务
+        let Run = new run();
+        await Run.userTask(user)
+        //每个账号之间等1~5秒随机时间
+        let rnd_time = Math.floor(Math.random() * 4000) + 1000
+        console.log(`随机等待${rnd_time / 1000}秒...`)
+        await $.wait(rnd_time)
+    }
+}
+
 /**
  * =========================================================发送消息=============================================
  */
