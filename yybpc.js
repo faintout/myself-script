@@ -25,6 +25,8 @@ class run {
     }
 async  userTask(user) {
     console.log(`\n========= 账号[${user.index}] 开始任务 =========`)
+    await this.getMobile(user)
+    await wait(3)
     await this.SignTask(user)
     await wait(2)
     await this.account(user)
@@ -51,12 +53,9 @@ async  userTask(user) {
             }
             //
             let { data: result} = await axios.request(urlObject)
-            //console.log(result);
             if (result?.status == true) {
                 //打印签到结果
                 DoubleLog(`🕊账号[${user.index}] 签到成功🎉`);
-            }if(result?.data.sign == "false") {
-                DoubleLog(`🕊账号[${user.index}] 签到失败:原因未知🚫`)
             }if (result?.status == false) {
                 DoubleLog(`🕊账号[${user.index}] 签到失败:${result.message}🚫`)
             }
@@ -121,6 +120,33 @@ async  accountDay(user) {
             DoubleLog(`🕊账号[${user.index}] 签到天数[${result.data.signDays}]🎉`);
         }else {
             DoubleLog(`🕊账号[${user.index}] 签到天数查询失败:${result.message}🚫`)
+        }
+        
+        
+    } catch (e) {
+        console.log(e);
+    }
+}
+async  getMobile(user) {
+    try {
+        DoubleLog(`🕊账号[${user.index}] 开始尝试登录...`);
+        let urlObject = {
+            method: 'get',
+            url: `https://webapi.qmai.cn/web/catering/crm/personal-info`,
+            headers: {
+                "qm-from": "wechat",
+                "qm-user-token": user.Authorization,
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) XWEB/9129',
+            },
+        }
+        //
+        let { data: result} = await axios.request(urlObject)
+        //console.log(result);
+        if (result?.status == true) {
+            //打印签到结果
+            DoubleLog(`🕊账号[${user.index}] 登录成功！当前手机号[${result.data.mobilePhone}]🎉`);
+        }else {
+            DoubleLog(`🕊账号[${user.index}] 登录失败:${result.message}🚫`)
         }
         
         
