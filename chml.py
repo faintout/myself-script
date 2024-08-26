@@ -14,10 +14,6 @@
 
 import os
 import requests
-response = requests.get("https://github.com/3288588344/toulu/blob/main/tl.txt")
-response.encoding = 'utf-8'
-txt = response.text
-print(txt)
 
 
 accounts = os.getenv("chmlck", "").splitlines()
