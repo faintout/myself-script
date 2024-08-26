@@ -217,10 +217,6 @@ const getAds = async (params)=>{
       title:item.title
     }
   })
-  adsList.push({
-    activityId:'100000924',
-    title:'每日抽奖'
-  })
   const {activityId} = adsList.filter(ads=>ads.title.includes('签到'))[0]
   signActivityId = activityId||0
   console.log(`查询活动列表成功！当前活动列表：${adsList.map(item=>item.title).join(',')}`)
