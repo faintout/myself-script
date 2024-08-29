@@ -279,6 +279,7 @@ class _0x5026b8 extends _0x4c79d9 {
         fn: "userSignStatistics",
         method: "post",
         "url": "https://webapi.qmai.cn/web/cmk-center/sign/userSignStatistics",
+        // "url": "https://webapi2.qmai.cn/web/cmk-center/common/getCrmAvailablePoints",
         "json": _0x303bc9
       };
       let {
@@ -316,9 +317,10 @@ class _0x5026b8 extends _0x4c79d9 {
       };
       const _0x1134c5 = {
         fn: "takePartInSign",
-        method: "post",
-        "url": "https://webapi.qmai.cn/web/cmk-center/sign/takePartInSign",
-        "json": _0xce18e9
+        method: "get",
+        // "url": "https://webapi.qmai.cn/web/cmk-center/sign/takePartInSign",
+        "url": "https://webapi2.qmai.cn/web/cmk-center/common/getCrmAvailablePoints",
+        // "json": _0xce18e9
       };
       let {
         result: _0x448442,
