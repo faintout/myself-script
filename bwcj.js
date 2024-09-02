@@ -360,11 +360,11 @@ class _0x5026b8 extends _0x4c79d9 {
         };
         this.log("新版签到成功", _0xd9911);
 
-        //检查是否累计十次签到 如累计 则延迟6分钟后继续签到
+        //检查是否累计十次签到 如累计 则延迟31分钟后继续签到
         successCount++
         if(successCount%10===0){
-          console.log('当前已累计签到10次，延迟6分钟后继续签到')
-          await _0x22822c.wait(1000*60*6)
+          console.log('当前已累计签到10次，延迟31分钟后继续签到')
+          await _0x22822c.wait(1000*60*31)
         }
       } else {
         let _0x4d7b0b = _0x22822c.get(_0x448442, "message", '');

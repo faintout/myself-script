@@ -14,6 +14,7 @@ const env_name = 'yybpc' //环境变量名字
 const env = process.env[env_name] || '' 
 const Notify = 1
 const debug = 0
+let successCount = 0
 let scriptVersionNow = "1.0.0";
 let msg = "";
 
@@ -27,7 +28,8 @@ async  userTask(user) {
     console.log(`\n========= 账号[${user.index}] 开始任务 =========`)
     await this.getMobile(user)
     await wait(3)
-    await this.SignTask(user)
+    const signStatusCode = await this.accountDay(user,true)
+    signStatusCode===2&&await this.SignTask(user)
     await wait(2)
     await this.account(user)
     await wait(3)
@@ -37,10 +39,47 @@ async  userTask(user) {
 //签到
     async  SignTask(user) {
         try {
+            DoubleLog(`🕊账号[${user.index}] 当前账号今日未签到...`);
             DoubleLog(`🕊账号[${user.index}] 开始签到...`);
             let urlObject = {
                 method: 'post',
                 url: `https://webapi.qmai.cn/web/cmk-center/sign/takePartInSign`,
+                headers: {
+                    "qm-from": "wechat",
+                    "qm-user-token": user.Authorization,
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) XWEB/9129',
+                },
+                data:{
+                    "activityId": "983701274523176960",
+                    "appid": "wx3423ef0c7b7f19af"
+                  }
+            }
+            //
+            let { data: result} = await axios.request(urlObject)
+            if (result?.status == true) {
+                //打印签到结果
+                DoubleLog(`🕊账号[${user.index}] 签到成功🎉`);
+                successCount++
+                if(successCount%10===0){
+                    console.log('当前已累计签到10次，延迟31分钟后继续签到')
+                    await wait(60*31)
+                }
+            }if (result?.status == false) {
+                DoubleLog(`🕊账号[${user.index}] 签到失败:${result.message}🚫`)
+            }
+            
+            
+        } catch (e) {
+           console.log(e);
+        }
+    }
+//查询签到状态
+    async  getSignStatus(user) {
+        try {
+            DoubleLog(`🕊账号[${user.index}] 签到状态检查...`);
+            let urlObject = {
+                method: 'post',
+                url: `https://webapi.qmai.cn/web/cmk-center/sign/userSignStatistics`,
                 headers: {
                     "qm-from": "wechat",
                     "qm-user-token": user.Authorization,
@@ -96,7 +135,7 @@ async  account(user) {
         console.log(e);
     }
 }
-async  accountDay(user) {
+async  accountDay(user,signStatus = false) {
     try {
         DoubleLog(`🕊账号[${user.index}] 开始查询签到天数...`);
         let urlObject = {
@@ -116,6 +155,10 @@ async  accountDay(user) {
         let { data: result} = await axios.request(urlObject)
         //console.log(result);
         if (result?.status == true) {
+            if(signStatus){
+                result.data.signStatus===1&&DoubleLog(`🕊账号[${user.index}] 当前账号今日已签到🎉`);
+                return result.data.signStatus
+            }
             //打印签到结果
             DoubleLog(`🕊账号[${user.index}] 签到天数[${result.data.signDays}]🎉`);
         }else {
@@ -125,6 +168,9 @@ async  accountDay(user) {
         
     } catch (e) {
         console.log(e);
+        if(signStatus){
+            return 2
+        }
     }
 }
 async  getMobile(user) {
