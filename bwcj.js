@@ -5,13 +5,16 @@
 只有签到得积分, 每天跑一两次就行
 积分可以换券
 
-授权注册后, 捉 webapi.qmai.cn 域名请求头里面的 Qm-User-Token, 填到变量 bwcjCookie 里面
-多账号换行或@或&隔开
-export bwcjCookie="H3is33xad2xxxxxxxxxxxxxxxxxx"
+授权注册后, 捉 webapi.qmai.cn 域名请求头里面的 Qm-User-Token, 到我的优惠券-已失效优惠券中customerId 填到变量 bwcjCookie 里面 用#分隔开
+多账号换行隔开
+export bwcjCookie="H3is33xad2xxxxxxxxxxxxxxxxxx#123123"
 
 cron: 46 8,20 * * *
 const $ = new Env("霸王茶姬");
 */
+const tokenUserList = []
+let successCount = 0
+const CryptoJS = require("crypto-js");
 const _0x22822c = _0x2fbb6b("霸王茶姬");
 const _0x30bd4a = require("got");
 const _0x25b427 = ["bwcjCookie"];
@@ -132,9 +135,12 @@ class _0x4c79d9 {
 }
 let _0x133ad6 = new _0x4c79d9();
 class _0x5026b8 extends _0x4c79d9 {
-  constructor(_0x56e4f1) {
+  constructor(_0x56e4f1,userId = '') {
     super();
     this.token = _0x56e4f1;
+    this.userId = userId
+    //赋值tokenList
+    tokenUserList.push(`${_0x56e4f1}#${userId}`)
     this.got = this.got.extend({
       "cookieJar": this.cookieJar,
       "headers": {
@@ -311,16 +317,37 @@ class _0x5026b8 extends _0x4c79d9 {
   }
   async ["takePartInSign"](_0x358d5a = {}) {
     try {
-      const _0xce18e9 = {
-        activityId: "947079313798000641",
-        "appid": "wxafec6f8422cb357b"
-      };
+      if(!this.userId){
+        await this.getUserId()
+      }
+    const timeStr = String(Date.now())
+    const  q =  (t='947079313798000641')=> {
+        var r, i, o = t.split("").reverse().join(""),
+            c = {
+                activityId: t,
+                sellerId: "49006",
+                timestamp: String(Date.now()),
+                userId: this.userId
+            },
+            u = Object.keys(c).sort().reduce((function (e, t) {
+                return e[t] = c[t], e
+            }), {}),
+            s = "".concat(Object.entries(u).map((function (t) {
+              // var n = _iterableToArrayLimit(t, 2),
+                    r = t[0],
+                    i = t[1];
+                return "".concat(r, "=").concat(i)
+            })).join("&"), "&key=").concat(o);
+           return CryptoJS.MD5(s).toString().toUpperCase()
+    };
+    const sign = q()
+    // console.log('sign',sign)
+      const _0xce18e9 = {"activityId":"947079313798000641","storeId":49006,"timestamp":timeStr,"signature":sign,"appid":"wxafec6f8422cb357b","store_id":49006}
       const _0x1134c5 = {
         fn: "takePartInSign",
-        method: "get",
-        // "url": "https://webapi.qmai.cn/web/cmk-center/sign/takePartInSign",
-        "url": "https://webapi2.qmai.cn/web/cmk-center/common/getCrmAvailablePoints",
-        // "json": _0xce18e9
+        method: "post",
+        "url": "https://webapi2.qmai.cn/web/cmk-center/sign/takePartInSign",
+        "json": _0xce18e9
       };
       let {
         result: _0x448442,
@@ -332,11 +359,47 @@ class _0x5026b8 extends _0x4c79d9 {
           notify: true
         };
         this.log("新版签到成功", _0xd9911);
+
+        //检查是否累计十次签到 如累计 则延迟6分钟后继续签到
+        successCount++
+        if(successCount%10===0){
+          console.log('当前已累计签到10次，延迟6分钟后继续签到')
+          await _0x22822c.wait(1000*60*6)
+        }
       } else {
         let _0x4d7b0b = _0x22822c.get(_0x448442, "message", '');
         this.log("新版签到失败[" + _0x44f380 + "]: " + _0x4d7b0b,{
           notify: true
         });
+      }
+    } catch (_0x259dbf) {
+      console.log(_0x259dbf);
+    }
+  }
+  async ["getUserId"](_0x358d5a = {}) {
+    try {
+      this.log('当前账号未配置userId 尝试从接口获取...')
+      const _0xce18e9 = {"pageNo":1,"pageSize":10,"useStatus":"6","appid":"wxafec6f8422cb357b"}
+      const _0x1134c5 = {
+        fn: "getUserId",
+        method: "post",
+        "url": "https://webapi2.qmai.cn/web/catering2-apiserver/crm/coupon/list",
+        "json": _0xce18e9
+      };
+      let {
+        result: _0x448442,
+        statusCode: _0x4589a3
+      } = await this.request(_0x1134c5);
+      let _0x44f380 = _0x22822c.get(_0x448442, "code", _0x4589a3);
+      if (_0x44f380 == 0&&_0x448442.data.total>0) {
+        const couponList = _0x448442.data.data
+        const userId = couponList[0]?.customerId
+        this.userId = userId
+        this.log('获取成功！当前账号userId 已更新!',this.userId)
+        tokenUserList[this.index-1] = `${this.token}#${this.userId}`
+        return userId
+      } else {
+        return null
       }
     } catch (_0x259dbf) {
       console.log(_0x259dbf);
@@ -387,9 +450,9 @@ class _0x5026b8 extends _0x4c79d9 {
       return;
     }
     await this.sign_detail();
-    await _0x22822c.wait(5500)
+    await _0x22822c.wait(1000*5)
     await this.userSignStatistics();
-    await _0x22822c.wait(4000)
+    await _0x22822c.wait(1000*6)
     await this.points_info();
   }
 }
@@ -399,9 +462,12 @@ class _0x5026b8 extends _0x4c79d9 {
     await _0x22822c.wait(1000*10)
     await _0x149376.userTask();
     _0x22822c.log('',{
-          notify: true
-        })
+      notify: true
+    })
   }
+  console.log('')
+  console.log('获取的token和userId如下，如未配置userId请复制下面列表到环境配置中')
+  console.log(tokenUserList.join("\n"))
 })()["catch"](_0x1beb77 => _0x22822c.log(_0x1beb77))["finally"](() => _0x22822c.exitNow());
 async function _0x1300b9(_0xf94bd9 = 0) {
   let _0x35435b = false;
@@ -562,7 +628,9 @@ function _0x2fbb6b(_0x4e1f8a) {
           if (this.userList.includes(_0x331480)) {
             continue;
           }
-          this.userList.push(new _0x2516a9(_0x331480));
+          //提取userId
+          const userInfoList = _0x331480.split('#')
+          this.userList.push(new _0x2516a9(userInfoList[0],userInfoList?.[1]||""));
         }
       }
       this.userCount = this.userList.length;
