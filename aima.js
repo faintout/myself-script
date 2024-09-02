@@ -217,8 +217,10 @@ const getAds = async (params)=>{
       title:item.title
     }
   })
-  const {activityId} = adsList.filter(ads=>ads.title.includes('签到'))[0]
-  signActivityId = activityId||0
+  const activityList = adsList.filter(ads=>ads.title.includes('签到'))
+  if(activityList.length){
+    signActivityId = activityList[0].activityId||0
+  }
   console.log(`查询活动列表成功！当前活动列表：${adsList.map(item=>item.title).join(',')}`)
 
 }
@@ -246,11 +248,17 @@ const processTokens = async () => {
         if(!id){
           continue;
         }
-        await userSign(params);
-        await $.wait(2000)
-        const searchData = await searchSignDay(params);
-        await receiveAward({...searchData,token:params});
-        // 开始签到
+        if(signActivityId!==0){
+          // 开始签到
+          await userSign(params);
+          await $.wait(2000)
+          const searchData = await searchSignDay(params);
+          await receiveAward({...searchData,token:params});
+        }else{
+          $.log('当前无签到活动，跳过签到！')
+        }
+
+        // 开始抽奖
         await luckyJoin(params);
         await $.wait(3500)
       } catch (error) {
