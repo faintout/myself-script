@@ -9,6 +9,7 @@ const {sendNotify} = require('./sendNotify.js')
 const $ = new Env("爱玛签到");
 const axios = require('axios')
 let index = 0
+const reqMax = 3
 let adsList = []
 let signActivityId = 0
 const userInfoList = $.getEnvKey('aima').split('\n')
@@ -225,9 +226,29 @@ const getAds = async (params)=>{
 
 }
 const searchSignDay = async (params) => {
-  const {data:{content:{signed,signAwards}}} = await api.search(params)
-  $.log(`账号【${index}】 连续签到天数：${signed}`);
-  return {signed,signAwards}
+  let reqCount = 0
+  const searchSignDayFn = async()=>{
+    try{
+      const data = await api.search(params)
+      if(data.data.code!==200){
+        throw new Error(data.data.chnDesc)
+      }
+      const {signed,signAwards} = data.data.content
+      $.log(`账号【${index}】 连续签到天数：${signed}`);
+      return {signed,signAwards}
+    }catch(e){
+      if(reqCount>=reqMax){
+        $.log(`重试次数已达上限，停止重试。`);
+        return null
+      }
+      reqCount++
+      $.log(`账号【${index}】 查询签到信息失败：${e}`);
+      $.log(`账号【${index}】 重试【${reqCount}】次。。。`);
+      await $.wait(2500)
+      return await searchSignDayFn(params)
+    }
+  }
+  return searchSignDayFn()
 }
 const processTokens = async () => {
     const randomTime = random(1, 300)
@@ -253,6 +274,10 @@ const processTokens = async () => {
           await userSign(params);
           await $.wait(2000)
           const searchData = await searchSignDay(params);
+          if(!searchData){
+            $.log('当前账号获取信息异常,跳过后续活动！')
+            continue;
+          }
           await receiveAward({...searchData,token:params});
         }else{
           $.log('当前无签到活动，跳过签到！')
