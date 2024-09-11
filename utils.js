@@ -18,13 +18,13 @@ const getCurrDay = () => {
 }
 //监测时间
 const checkTime = async(args = {})=>{
-    const {minutes,seconds,milliseconds} = args
+    const {year,month,date,hours,minutes,seconds,milliseconds} = args
     const now = new Date();
     const targetTime = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      now.getHours(),
+      year??now.getFullYear(),
+      month??now.getMonth(),
+      date??now.getDate(),
+      hours??now.getHours(),
       minutes??now.getMinutes(),
       seconds??now.getSeconds(),
       milliseconds??now.getMilliseconds()
