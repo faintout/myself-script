@@ -363,8 +363,8 @@ class _0x5026b8 extends _0x4c79d9 {
         //检查是否累计十次签到 如累计 则延迟31分钟后继续签到
         successCount++
         if(successCount%10===0){
-          console.log('当前已累计签到10次，延迟31分钟后继续签到')
-          await _0x22822c.wait(1000*60*31)
+          console.log('当前已累计签到10次，延迟35分钟后继续签到')
+          await _0x22822c.wait(1000*60*35)
         }
       } else {
         let _0x4d7b0b = _0x22822c.get(_0x448442, "message", '');
@@ -379,26 +379,27 @@ class _0x5026b8 extends _0x4c79d9 {
   async ["getUserId"](_0x358d5a = {}) {
     try {
       this.log('当前账号未配置userId 尝试从接口获取...')
-      const _0xce18e9 = {"pageNo":1,"pageSize":10,"useStatus":"6","appid":"wxafec6f8422cb357b"}
       const _0x1134c5 = {
         fn: "getUserId",
-        method: "post",
-        "url": "https://webapi2.qmai.cn/web/catering2-apiserver/crm/coupon/list",
-        "json": _0xce18e9
+        method: "get",
+        "url": "https://webapi2.qmai.cn/web/catering2-apiserver/crm/customer/card/level/benefits?appid=wxafec6f8422cb357b",
       };
       let {
         result: _0x448442,
         statusCode: _0x4589a3
       } = await this.request(_0x1134c5);
       let _0x44f380 = _0x22822c.get(_0x448442, "code", _0x4589a3);
-      if (_0x44f380 == 0&&_0x448442.data.total>0) {
-        const couponList = _0x448442.data.data
-        const userId = couponList[0]?.customerId
-        this.userId = userId
+      if (_0x44f380 == 0) {
+        this.userId = _0x448442["data"]["upgradeInfoResponse"]["customerId"]
+        if(!this.userId){
+          this.log('获取userId失败！')
+          return null
+        }
         this.log('获取成功！当前账号userId 已更新!',this.userId)
         tokenUserList[this.index-1] = `${this.token}#${this.userId}`
-        return userId
+        return this.userId
       } else {
+        this.log('获取userId失败！')
         return null
       }
     } catch (_0x259dbf) {
