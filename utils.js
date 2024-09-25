@@ -1,8 +1,8 @@
 // cron: 1 *
 // 获取当前日期
-const getCurrDay = () => {
+const getCurrDay = (targetTime) => {
     // 创建一个新的 Date 对象，它将包含当前的日期和时间
-    const currentDate = new Date();
+    const currentDate = targetTime?new Date(targetTime):new Date();
     // 获取当前日期的年、月、日
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // 月份从 0 开始，因此需要加 1
@@ -31,7 +31,7 @@ const checkTime = async(args = {})=>{
     );
   
     const delay = targetTime - now;
-    console.log(delay<0?'已超过目标时间立即执行':`等待${delay/1000}秒后执行`);
+    console.log(delay<0?'已超过目标时间立即执行':`等待${delay/1000}秒后 预计${getCurrDay(targetTime)}执行`);
   
     return new Promise((resolve) => {
       setTimeout(() => {

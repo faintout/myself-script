@@ -17,6 +17,10 @@ const debug = 0
 let successCount = 0
 let scriptVersionNow = "1.0.0";
 let msg = "";
+const {
+    sleep,getCurrDay,checkTime
+    } = require('./utils.js')
+
 
 
 // ======================================开始任务=========================================
@@ -201,6 +205,35 @@ async  getMobile(user) {
     }
 }
 }
+
+const  getGoods = async (user)=> {
+    try {
+        DoubleLog(`🕊账号[${user.index}] 开始抢券-${getCurrDay()}...`);
+        let urlObject = {
+            method: 'post',
+            url: `https://webapi.qmai.cn/web/mall-apiserver/integral/order/create`,
+            headers: {
+                "qm-from": "wechat",
+                "qm-user-token": user.Authorization,
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090a13) XWEB/9129',
+            },
+            data:{"goodsId":"1009499118503997441","channelCode":"","appid":"wx3423ef0c7b7f19af"}
+        }
+        //
+        let { data: result} = await axios.request(urlObject)
+        //console.log(result);
+        if (result?.status == true) {
+            //打印签到结果
+            DoubleLog(`🕊账号[${user.index}] - ${getCurrDay()} 抢券成功！返回参数[${JSON.stringify(result.data)}]🎉`);
+        }else {
+            DoubleLog(`🕊账号[${user.index}] - ${getCurrDay()} 抢券失败:${result.message}🚫`)
+        }
+        
+        
+    } catch (e) {
+        console.log(e);
+    }
+}
 // ==================================异步顺序==============================================================================
 !(async () => {
     // await getNotice();  //远程通知
@@ -224,6 +257,37 @@ async function main() {
     let user_ck = env.split('\n')
     DoubleLog(`\n========= 共找到 ${user_ck.length} 个账号 =========`);
     let index = 1 //用来给账号标记序号, 从1开始
+    const date = new Date()
+    const hour = date.getHours()
+    const day = date.getDay()
+    if(day===2&&hour===11){
+        DoubleLog('当前为抢券时段,开始执行抢券任务');
+        //当前模式为抢购模式
+        await checkTime({
+          hours:11,
+          minutes:59,
+          seconds:58,
+          milliseconds:0
+        })
+        for(let i=0;i<5;i++){
+            index = 1 //每次重置序号为1
+            for (let ck of user_ck) {
+                await sleep(20)
+                if (!ck) continue //跳过空行
+                let ck_info = ck.split('&')
+                let Authorization = ck_info[0] 
+                let user = {
+                    index: index,
+                    Authorization, 
+                }
+                index = index + 1 //每次用完序号+1
+                //开始账号任务
+                getGoods(user)
+            }
+        }
+        return 
+    }
+
     for (let ck of user_ck) {
         if (!ck) continue //跳过空行
         let ck_info = ck.split('&')
