@@ -188,7 +188,7 @@ class _0x5026b8 extends _0x4c79d9 {
           mobilePhone: _0x386fcf,
           name: _0x268ef0
         } = _0x1f1cc3?.["data"];
-        this.name = _0x386fcf;
+        this.name = _0x386fcf.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
         this.userName = _0x268ef0;
       } else {
         let _0x1dd339 = _0x22822c.get(_0x1f1cc3, "message", '');
@@ -450,8 +450,8 @@ class _0x5026b8 extends _0x4c79d9 {
     if (!(await this.personal_info())) {
       return;
     }
-    await this.sign_detail();
-    await _0x22822c.wait(1000*5)
+    // await this.sign_detail();
+    // await _0x22822c.wait(1000*5)
     await this.userSignStatistics();
     await _0x22822c.wait(1000*6)
     await this.points_info();
@@ -673,7 +673,7 @@ function _0x2fbb6b(_0x4e1f8a) {
       }
       var _0xbdfca2 = require("./sendNotify");
       this.log("\n============== 推送 ==============");
-      await _0xbdfca2.sendNotify(this.name, this.notifyStr.join("\n"));
+      await _0xbdfca2.sendNotify(this.name, this.notifyStr.join("\n"),{wxpusherTopicId:34055});
     }
     ["padStr"](_0x17d5d5, _0x5483df, _0x1d0272 = {}) {
       let _0x3619a7 = _0x1d0272.padding || "0";
