@@ -171,7 +171,7 @@ class RUN:
         }
         url = 'https://mcs-mimp-web.sf-express.com/mcs-mimp/commonPost/~memberActLengthy~redPacketActivityService~superWelfare~receiveRedPacket'
         response = self.do_request(url, data=json_data)
-        # print(response)
+        print(response)
         if response.get('success') == True:
             gift_list = response.get('obj', {}).get('giftList', [])
             if response.get('obj', {}).get('extraGiftList', []):
@@ -1949,7 +1949,7 @@ class RUN:
         if not self.login_res: return False
         # 执行签到任务
         self.sign()
-        self.superWelfare_receiveRedPacket()
+        # self.superWelfare_receiveRedPacket()
         self.get_SignTaskList()
         self.get_SignTaskList(True)
 
