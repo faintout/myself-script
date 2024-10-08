@@ -12,8 +12,10 @@ const $ = new Env('vx爷爷不泡茶')
 const axios = require('axios')
 const env_name = 'yybpc' //环境变量名字
 const env = process.env[env_name] || '' 
+const isGetGoods = process.env['yybpc_get'] || false
 const Notify = 1
 const debug = 0
+const requestCount = 500
 let successCount = 0
 let scriptVersionNow = "1.0.0";
 let msg = "";
@@ -260,8 +262,9 @@ async function main() {
     const date = new Date()
     const hour = date.getHours()
     const day = date.getDay()
-    if(day===2&&hour===11){
-        DoubleLog('当前为抢券时段,开始执行抢券任务');
+    if(isGetGoods&&day===2&&hour===11){
+        const count = Math.floor(requestCount/user_ck.length)
+        DoubleLog(`当前为抢券时段,开始执行抢券任务,循环次数为${count}`);
         //当前模式为抢购模式
         await checkTime({
           hours:11,
@@ -269,10 +272,11 @@ async function main() {
           seconds:59,
           milliseconds:0
         })
-        for(let i=0;i<80;i++){
+
+        for(let i=0;i<count;i++){
             index = 1 //每次重置序号为1
             for (let ck of user_ck) {
-                // await sleep(20)
+                await sleep(5)
                 if (!ck) continue //跳过空行
                 let ck_info = ck.split('&')
                 let Authorization = ck_info[0] 
