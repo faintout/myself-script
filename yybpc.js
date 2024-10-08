@@ -266,13 +266,13 @@ async function main() {
         await checkTime({
           hours:11,
           minutes:59,
-          seconds:58,
+          seconds:59,
           milliseconds:0
         })
-        for(let i=0;i<5;i++){
+        for(let i=0;i<80;i++){
             index = 1 //每次重置序号为1
             for (let ck of user_ck) {
-                await sleep(20)
+                // await sleep(20)
                 if (!ck) continue //跳过空行
                 let ck_info = ck.split('&')
                 let Authorization = ck_info[0] 
