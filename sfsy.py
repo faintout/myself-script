@@ -2007,9 +2007,11 @@ def get_quarter_end_date():
     current_date = datetime.now()
     current_month = current_date.month
     current_year = current_date.year
-
+    target_month = ((current_month - 1) // 3 + 1) * 3 + 1
+    if target_month>12:
+        target_month = 12
     # 计算下个季度的第一天
-    next_quarter_first_day = datetime(current_year, ((current_month - 1) // 3 + 1) * 3 + 1, 1)
+    next_quarter_first_day = datetime(current_year, target_month, 1)
 
     # 计算当前季度的最后一天
     quarter_end_date = next_quarter_first_day - timedelta(days=1)
