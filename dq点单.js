@@ -12,7 +12,7 @@
 
 
 const axios = require('axios');
-const dqdd = process.env.dqdd.split('&');
+const dqdd = process.env.dqdd.split('\n');
 
 const url = 'https://wechat.dairyqueen.com.cn/memSignIn/signIn';
 
