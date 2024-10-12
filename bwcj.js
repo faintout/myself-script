@@ -675,7 +675,7 @@ function _0x2fbb6b(_0x4e1f8a) {
       }
       var _0xbdfca2 = require("./sendNotify");
       this.log("\n============== 推送 ==============");
-      await _0xbdfca2.sendNotify(this.name, this.notifyStr.join("\n")+'\n'+loginErrorList.join("\n"),{wxpusherTopicId:34055});
+      await _0xbdfca2.sendNotify(this.name, loginErrorList.join("\n")+'\n'+this.notifyStr.join("\n"),{wxpusherTopicId:34055});
     }
     ["padStr"](_0x17d5d5, _0x5483df, _0x1d0272 = {}) {
       let _0x3619a7 = _0x1d0272.padding || "0";
