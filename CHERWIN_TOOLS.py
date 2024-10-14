@@ -259,6 +259,18 @@ def ENV_SPLIT(input_str):
                 parts.append(part)
         # print(parts)
         return (parts)
+    
+    if '\n' in input_str:
+        amp_parts = input_str.split('\n')
+        for part in amp_parts:
+            if '#' in part:
+                hash_parts = part.split('#')
+                for hash_part in hash_parts:
+                    parts.append(hash_part)
+            else:
+                parts.append(part)
+        # print(parts)
+        return (parts)
 
     elif '#' in input_str:
         hash_parts = input_str.split('#')
@@ -366,7 +378,7 @@ def GJJJ_SIGN():
     app_id = "667516"
     app_crypto = "FH3yRrHG2RfexND8"
     timestamp = int(time.time() * 1000)
-    # timestamp = 1715180892075
+    # timestamp = 1728884972444
     text = f"{app_id}{app_crypto}{timestamp}"
     sign = hashlib.md5(text.encode()).hexdigest()
     new_data = {
@@ -374,6 +386,7 @@ def GJJJ_SIGN():
         "sign": sign
     }
     return new_data
+print(GJJJ_SIGN())
 
 
 def KWW_SIGN(memberId):

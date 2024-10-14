@@ -41,21 +41,22 @@ class RUN:
         one_msg = ''
         split_info = info.split('@')
 
-        # self.token = json.loads(split_info[0])
         len_split_info = len(split_info)
         if len_split_info < 3:return False
-        identityValue = split_info[0]
-        openid = split_info[1]
-        unionid = split_info[2]
+        AccessToken = split_info[2]
+
+        self.membershipId = split_info[1]
+        self.brandCode = 'K001'
+        self.mobile = split_info[0]
         self.token = {
             "identityType":"mobile",
-            "identityValue":identityValue,
+            # "identityValue":identityValue,
             "type2":"wechat-unionid",
             "value2":"",
             "source":"顾家小程序",
             "contentName":"",
-            "openid":openid,
-            "unionid":unionid
+            # "openid":openid,
+            # "unionid":unionid
         }
         # print(self.token)
         last_info = split_info[len_split_info - 1]
@@ -74,10 +75,11 @@ class RUN:
             # "timestamp": "1715180892075",
             "xweb_xhr": "1",
             "brandCode": "K001",
-            # "X-Customer": "4802198",
+            "X-Customer":self.membershipId ,
             "appid": "667516",
             # "sign": "7acf4f02413bd9855047cc345be6da21",
             "Accept": "*/*",
+            "AccessToken": AccessToken,
             "Sec-Fetch-Site": "cross-site",
             "Sec-Fetch-Mode": "cors",
             "Sec-Fetch-Dest": "empty",
@@ -379,16 +381,16 @@ class RUN:
 
     def main(self):
         Log(f"\n======= 开始执行第{self.index}个账号 =======")
-        if self.automaticLogin():
-            self.checkSign()
-            # self.selectPointTask()
-            self.selectPage()
-            self.personal()
-            self.sendMsg()
-            return True
-        else:
-            self.sendMsg()
-            return False
+        # if self.automaticLogin():
+        self.checkSign()
+        # self.selectPointTask()
+        self.selectPage()
+        self.personal()
+        self.sendMsg()
+        return True
+        # else:
+        #     self.sendMsg()
+        #     return False
 
     def sendMsg(self):
         if self.send_UID:
@@ -431,7 +433,7 @@ if __name__ == '__main__':
     APP_NAME = '顾家家居小程序'
     ENV_NAME = 'gjjj'
     CK_URL = 'https://mc.kukahome.com/club-server/member/automaticLogin'
-    CK_NAME = 'identityValue@openid@o98mO0xrQ9Jqp0DUsGpmfHpQm_pQ'
+    CK_NAME = 'identityValue@id@AccessToken'
     print(f'''
 ✨✨✨ {APP_NAME}签到✨✨✨
 ✨ 功能：
@@ -447,7 +449,7 @@ if __name__ == '__main__':
   ✨需要定义变量export WXPUSHER=wxpusher的app_token，不设置则不启用wxpusher一对一推送
   ✨需要在{ENV_NAME}变量最后添加@wxpusher的UID
 ✨ 设置青龙变量：
-export {ENV_NAME}='{CK_NAME}参数值'多账号#或&分割
+export {ENV_NAME}='{CK_NAME}参数值'多账号#或&或换行分割
 export SCRIPT_UPDATE = 'False' 关闭脚本自动更新，默认开启
 ✨ ✨ 注意：抓完CK没事儿别打开小程序，重新打开小程序请重新抓包
 ✨ 推荐cron：1 9 * * *
