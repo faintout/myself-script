@@ -18,6 +18,7 @@ const debug = 0
 const requestCount = 500
 let successCount = 0
 let scriptVersionNow = "1.0.0";
+const getGoodsSuccessList = ['抢券成功账号列表']
 let msg = "";
 const {
     sleep,getCurrDay,checkTime
@@ -227,6 +228,7 @@ const  getGoods = async (user)=> {
         if (result?.status == true) {
             //打印签到结果
             DoubleLog(`🕊账号[${user.index}] - ${getCurrDay()} 抢券成功！返回参数[${JSON.stringify(result.data)}]🎉`);
+            getGoodsSuccessList.push(`🕊账号[${user.index}] - ${getCurrDay()} 抢券成功！`)
         }else {
             DoubleLog(`🕊账号[${user.index}] - ${getCurrDay()} 抢券失败:${result.message}🚫`)
         }
@@ -241,6 +243,8 @@ const  getGoods = async (user)=> {
     // await getNotice();  //远程通知
     // await getVersion("yang7758258/ohhh154@main/yybpc.js");
     await main();//主函数
+    msg=getGoodsSuccessList.join('\n')+'\n'+msg
+    console.log(getGoodsSuccessList.join('\n'))
     await SendMsg(msg); //发送通知
 
 })()
