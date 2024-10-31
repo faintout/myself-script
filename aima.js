@@ -110,6 +110,17 @@ const api = {
           data:{"location":1,"adType":0,"status":2}
       })
   },
+  getLocation: (token) => {
+      return axios({
+          url: 'https://scrm.aimatech.com/aima/wxclient/mkt/activities/locations:search',
+          method: 'post',
+          headers:{
+            ...headers,
+            ...token
+          },
+          data:{"locations":[0,1,2]}
+      })
+  },
   receive_award: (token,activityAwardId,awardId) => {
       return axios({
           url: 'https://scrm.aimatech.com/aima/wxclient/mkt/activities/sign:receive_award',
@@ -212,12 +223,23 @@ const matchActiveId = (link)=>{
 }
 const getAds = async (params)=>{
   const {data:{recordList}} = await api.getAds(params)
+  const {data:{content}} = await api.getLocation(params)
   adsList = recordList.filter(item=>matchActiveId(item.link)).map(item=>{
     return {
       activityId:matchActiveId(item.link),
       title:item.title
     }
   })
+  //添加其他活动来源
+  adsList.push(...content.map(con=>{
+    return {
+      activityId:con.activityId,
+      title:con.name
+    }
+  }))
+  adsList = adsList.filter((item, index, self) =>
+    index === self.findIndex((t) => t.activityId == item.activityId)
+  );
   const activityList = adsList.filter(ads=>ads.title.includes('签到'))
   if(activityList.length){
     signActivityId = activityList[0].activityId||0
