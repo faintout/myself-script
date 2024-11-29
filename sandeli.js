@@ -145,11 +145,11 @@ const processTokens = async () => {
             userInfoList.splice(i, 1);
             continue;
           }
-          // if(Number(currentScore)<1800){
-          //   $.log(`账号【${mobile}】当前积分${currentScore}小于1800,跳过当前账号`);
-          //   userInfoList.splice(i, 1);
-          //   continue;
-          // }
+          if(Number(currentScore)<1800){
+            $.log(`账号【${mobile}】当前积分${currentScore}小于1800,跳过当前账号`);
+            userInfoList.splice(i, 1);
+            continue;
+          }
           
           userInfoList[i]+=`&${mobile}`
           await $.wait(2500)
