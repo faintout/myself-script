@@ -218,7 +218,7 @@ const luckyJoin = async (params) => {
   }
 }
 const matchActiveId = (link)=>{
-  const match = link.match(/activityId=(\d+)/);
+  const match = link?.match(/activityId=(\d+)/);
   return match?match[1]:''
 }
 const getAds = async (params)=>{
