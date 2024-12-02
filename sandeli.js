@@ -213,7 +213,7 @@ const processTokens = async () => {
       }
     }
     $.log('')
-    $.logs.join('<br>')
+    $.logs = $.logs.join('<br>')
   };
   
   processTokens().finally(async() => {
