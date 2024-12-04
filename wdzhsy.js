@@ -1,6 +1,6 @@
 /**
  * 脚本名称：万达智慧商业
- * cron: 34 8,18 * * *
+ * cron: 34 8,12,15,18 * * *
  * 活动规则：完成每日任务，每日可获得 148 万商分
  * 脚本说明：添加重写进入"万达智慧商业"小程序-"我的"界面，即可获取 Token，支持多账号，兼容 NE / Node.js 环境。
  * 环境变量：wdzhsy_token / CODESERVER_ADDRESS、CODESERVER_FUN
@@ -80,9 +80,18 @@ script-providers:
           $.is_login = true;
           $.token = $.userArr[i]['token'];
           $.headers = {
-            'Referer': 'https://servicewechat.com/wx8e4763f7ed741710/112/page-frame.html',
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_8 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.48(0x1800302b) NetType/4G Language/zh_CN',
-            'content-type': 'application/json',
+            'Host': 'www.wandawic.com',
+            'Connection': 'keep-alive',
+            'xweb_xhr': 1,
+            'Content-Type': 'application/json',
+            'Accept': '*/*',
+            'Sec-Fetch-Site': 'cross-site',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Dest': 'empty',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'zh-CN,zh;q=0.9',
+            'Referer': 'https://servicewechat.com/wx8e4763f7ed741710/162/page-frame.html',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090c11)XWEB/11275',
             'wic-member-token': $.token
           }
     
@@ -307,7 +316,7 @@ script-providers:
       let msg = '';
       // 构造请求
       let opt = {
-        url: `https://www.wandawic.com/api/foreground/loginregister/queryUser`,
+        url: `https://www.wandawic.com/api/wic-member-application/api/user/queryUser`,
         headers: $.headers,
         body: $.toStr({
           time: getDateTime(),
@@ -318,7 +327,7 @@ script-providers:
     
       // 发起请求
       var result = await Request(opt);
-      if (result?.code == '200' && result?.data) {
+      if (result?.code == 10000 && result?.data) {
         const { desePhone, balance } = result?.data;
         if(isShowMsg) {
           msg += `✅ 账号:${desePhone},帐户共计:${balance}万商分\n`;
