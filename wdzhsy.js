@@ -1,6 +1,7 @@
 /**
  * 脚本名称：万达智慧商业
  * cron: 34 8,12,15,18 * * *
+ * 参数填写 wdzhsy_token 多个换行
  * 活动规则：完成每日任务，每日可获得 148 万商分
  * 脚本说明：添加重写进入"万达智慧商业"小程序-"我的"界面，即可获取 Token，支持多账号，兼容 NE / Node.js 环境。
  * 环境变量：wdzhsy_token / CODESERVER_ADDRESS、CODESERVER_FUN
@@ -59,7 +60,7 @@ script-providers:
     const $ = new Env('万达智慧商业');
     $.is_debug = getEnv('is_debug') || 'false';  // 调试模式
     $.userInfo = getEnv('wdzhsy_token') || '';  // Token
-    $.userArr = JSON.parse($.userInfo) || [];  // 用户数组
+    $.userArr = $.userInfo.split('\n');  // 用户数组
     $.appid = 'wx8e4763f7ed741710';  // 小程序 appId
     $.messages = [];
     
@@ -78,7 +79,7 @@ script-providers:
           $.log(`----- 账号 [${i + 1}] 开始执行 -----`);
           // 初始化
           $.is_login = true;
-          $.token = $.userArr[i]['token'];
+          $.token = $.userArr[i]
           $.headers = {
             'Host': 'www.wandawic.com',
             'Connection': 'keep-alive',
@@ -106,6 +107,8 @@ script-providers:
           await $.wait(2000);
           // 获取用户信息, 打印日志
           await getUserInfo(true);
+          await $.wait(2000);
+          await getUserBalance()
         }
         $.log(`----- 所有账号执行完成 -----`);
       } else {
@@ -330,7 +333,7 @@ script-providers:
       if (result?.code == 10000 && result?.data) {
         const { desePhone, balance } = result?.data;
         if(isShowMsg) {
-          msg += `✅ 账号:${desePhone},帐户共计:${balance}万商分\n`;
+          msg += `✅ 账号:${desePhone}`;
         }
       } else if (result?.code == '401') {
         $.is_login = false;  // Token 失效
@@ -342,6 +345,31 @@ script-providers:
       if(isShowMsg) {
         $.messages.push(msg.trimEnd()), $.log(msg.trimEnd());
       }
+    }
+    // 获取用户信息
+    async function getUserBalance() {
+      let msg = '';
+      // 构造请求
+      let opt = {
+        url: `https://www.wandawic.com/api/interface/integral/qryAccountBooks `,
+        headers: $.headers,
+        body: $.toStr({
+          time: getDateTime(),
+          channelCode: "ch_xcx",
+          token: $.token,
+          data:{}
+        })
+      };
+    
+      // 发起请求
+      var result = await Request(opt);
+      if (result?.code == '200' && result?.data) {
+        const { balance } = result?.data;
+          msg += `✅ 帐户共计:${balance}万商分\n`;
+      }  else {
+        $.log(`查询用户信息失败 `);
+      }
+        $.messages.push(msg.trimEnd()), $.log(msg.trimEnd());
     }
     // 随机获取一个商铺 ID
     async function getShops() {
