@@ -8,7 +8,7 @@ const {
 sleep,getCurrDay,checkTime,Env
 } = require('./utils.js')
 const $ = new Env('好奇车抢红包')
-const userInfoList = $.getEnvKey('hqcshck').split('&')
+const userInfoList = $.getEnvKey('hqcshck').split('\n')
 if(!userInfoList.length||userInfoList[0]===''){
   throw new Error('未找到ck')
 }
@@ -19,22 +19,23 @@ const header = {
 'Connection': 'keep-alive',
 'geolocation': '',
 'wxappid': '619669369294712832',
-'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090b11)XWEB/11065',
+'User-Agent': 'Mozilla/5.0 (Linux; Android 14; Mi14 Pro Build/RKQ1.200826.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/116.0.0.0 Mobile Safari/537.36 XWEB/1160065 MMWEBSDK/20230701 MMWEBID/8701 MicroMessenger/8.0.40.2420(0x28002858) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 miniProgram/wx1ddeb67115f30d1a',
 'tenantId': '619669306447261696',
 'activityId': '621950054462152705',
-'requestUrl': 'https://channel.cheryfs.cn/archer/act/619669306447261696/619669369294712832/activity/pointsmall-detail/621950054462152705?pageId=page1607309582231&num=1&cardId=622188100122075136&anchorId=&anchorAnimateType=',
+'requestUrl': 'https://channel.cheryfs.cn/archer/act/619669306447261696/619669369294712832/activity/pointsmall-detail/621950054462152705/npSrn1cIT5AkSaSz?pageId=page1607309582231&num=1&cardId=850530474589614080&anchorId=&anchorAnimateType=',
 'Accept': 'application/json, text/plain, */*',
 'channelCode': '',
-'timestamp': '1720074414164',
+'timestamp': '1733390591069',
 'assemblyName': '%E7%A7%AF%E5%88%86%E5%95%86%E5%9F%8E%E5%85%91%E6%8D%A22',
-'sign': '1631dc8d17da583f0b09e6b2e17fd4bf',
+'sign': '4a743f750023cfa3a0348368e512ace9',
 'accountId': '',
 'Sec-Fetch-Site': 'same-origin',
 'Sec-Fetch-Mode': 'cors',
 'Sec-Fetch-Dest': 'empty',
-'Referer': 'https://channel.cheryfs.cn/archer/act/619669306447261696/619669369294712832/activity/pointsmall-detail/621950054462152705?pageId=page1607309582231&num=1&cardId=622188100122075136&anchorId=&anchorAnimateType=',
+'Referer': 'https://channel.cheryfs.cn/archer/act/619669306447261696/619669369294712832/activity/pointsmall-detail/621950054462152705/npSrn1cIT5AkSaSz?pageId=page1607309582231&num=1&cardId=850530474589614080&anchorId=&anchorAnimateType=',
 'Accept-Encoding': 'gzip, deflate, br',
 'Accept-Language': 'zh-CN,zh;q=0.9',
+'Cookie': 'uid-619669306447261696-619669369294712832=e096cb713417e83295bd965dc4e493feadf9f0cca066368bb53d2b111b1fa8e2'
 }
 const api = {
 
@@ -49,7 +50,7 @@ const api = {
               },
           })
           console.log("")
-          res(JSON.stringify(response.data?.result))
+          res(JSON.stringify(response.data))
         })
     },
   receiveActiveTaskFetch: (ck,taskId) => {
@@ -117,10 +118,10 @@ const getReceiveActiveTask = async({ck,taskId})=>{
 }
 
 
-const q1 = '647894196522340352'  // 188积分 1.08元
-const q2 = '622187839353806848'  // 288积分 1.88元
-const q3 = '622187928306601984'  // 588积分 3.88元
-const q4 = '622188100122075136'  // 888积分 5.88元
+const q1 = '792556957722198016'  // 1800积分 京东E卡18 元①
+const q2 = '850529542367801344'  // 174积分 奇瑞微信红包1元
+const q3 = '850530051048796161'  // 522积分 奇瑞微信红包3元 
+const q4 = '850530474589614080'  // 870积分 奇瑞微信红包5元
 async function concurrentPromises(promiseFunction,args, count,timeout = 0) {
   for (let i = 0; i < count; i++) {
       if(timeout){
