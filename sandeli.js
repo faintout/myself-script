@@ -11,7 +11,7 @@ const $ = new Env("三得利签到");
 const axios = require('axios')
 const userInfoList = $.getEnvKey('sandeli').split('\n')
 const isGetGoods = process.env['sandeli_get'] || false
-const requestCount = 500
+const requestCount = 125
 const getGoodsSuccessList = ['抢券成功账号列表']
 const goodsList = [
   {
@@ -97,7 +97,7 @@ const api = {
           url: baseUrl+url.goods,
           method: 'post',
           headers,
-          data:{"businessType":"POINTS_MALL","pointMallSubmitRequest":{"exchangeActivityId":activeId,"productBizNo":goodsId,"discountType":"GOODS","addressId":addressId}}
+          data:{"businessType":"POINTS_MALL","pointMallSubmitRequest":{"exchangeActivityId":activeId,"productBizNo":goodsId,"discountType":"GOODS","addressId":Number(addressId)}}
       })
   },
 }
@@ -173,7 +173,7 @@ const processTokens = async () => {
       for(let i=0;i<count;i++){
           index = 1 //每次重置序号为1
           for (let cks of userInfoList) {
-              await $.wait(5)
+              await $.wait(20)
               index = index + 1 //每次用完序号+1
               //开始账号任务
               getGoods(cks)
