@@ -85,6 +85,8 @@ class RUN:
         self.answer = False
         self.max_level = 8
         self.packet_threshold = 1 << (self.max_level - 1)
+        self.max_retries = 3  # 最大重试次数
+        self.retry_delay = 3  # 重试间隔秒数
 
     def get_deviceId(self, characters='abcdef0123456789'):
         result = ''
@@ -128,21 +130,24 @@ class RUN:
 
     def do_request(self, url, data={}, req_type='post'):
         self.getSign()
-        try:
-            if req_type.lower() == 'get':
-                response = self.s.get(url, headers=self.headers)
-            elif req_type.lower() == 'post':
-                response = self.s.post(url, headers=self.headers, json=data)
-            else:
-                raise ValueError('Invalid req_type: %s' % req_type)
-            res = response.json()
-            return res
-        except requests.exceptions.RequestException as e:
-            print('Request failed:', e)
-            return None
-        except json.JSONDecodeError as e:
-            print('JSON decoding failed:', e)
-            return None
+        for retry in range(self.max_retries):
+            try:
+                if req_type.lower() == 'get':
+                    response = self.s.get(url, headers=self.headers)
+                elif req_type.lower() == 'post':
+                    response = self.s.post(url, headers=self.headers, json=data)
+                else:
+                    raise ValueError('Invalid req_type: %s' % req_type)
+                res = response.json()
+                return res
+            except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+                if retry < self.max_retries - 1:  # 如果不是最后一次重试
+                    print(f'请求失败，{self.retry_delay}秒后进行第{retry + 2}次重试: {str(e)}')
+                    time.sleep(self.retry_delay)  # 延时后重试
+                    continue
+                else:  # 最后一次重试也失败
+                    print(f'请求失败，已重试{self.max_retries}次: {str(e)}')
+                    return None
 
     def sign(self):
         print(f'>>>>>>开始执行签到')
@@ -2072,7 +2077,7 @@ if __name__ == '__main__':
       打开{APP_NAME}APP或小程序
       点击我的
       打开抓包工具
-      点击“积分”，以下几种url之一：
+      点击"积分"，以下几种url之一：
         https://mcs-mimp-web.sf-express.com/mcs-mimp/share/weChat/shareGiftReceiveRedirect
         https://mcs-mimp-web.sf-express.com/mcs-mimp/share/app/shareRedirect
     多账号#、@、换行分割 
