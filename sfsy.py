@@ -63,6 +63,13 @@ class RUN:
         Log(f"\n---------开始执行第{self.index}个账号>>>>>")
         self.s = requests.session()
         self.s.verify = False
+        self.s.mount('https://', requests.adapters.HTTPAdapter(
+            max_retries=requests.adapters.Retry(
+                total=3,
+                backoff_factor=0.5,
+                status_forcelist=[500, 502, 503, 504]
+            )
+        ))
         self.headers = {
             'Host': 'mcs-mimp-web.sf-express.com',
             'upgrade-insecure-requests': '1',
@@ -100,18 +107,27 @@ class RUN:
         return result
 
     def login(self, sfurl):
-        ress = self.s.get(sfurl, headers=self.headers)
-        # print(ress.text)
-        self.user_id = self.s.cookies.get_dict().get('_login_user_id_', '')
-        self.sessionId = self.s.cookies.get_dict().get('sessionId', '')
-        self.phone = self.s.cookies.get_dict().get('_login_mobile_', '')
-        self.mobile = self.phone[:3] + "*" * 4 + self.phone[7:]
-        if self.phone != '':
-            Log(f'用户:【{self.mobile}】登陆成功')
-         
-            return True
-        else:
-            Log(f'获取用户信息失败')
+        try:
+            ress = self.s.get(sfurl, headers=self.headers, timeout=30)
+            # print(ress.text)
+            self.user_id = self.s.cookies.get_dict().get('_login_user_id_', '')
+            self.sessionId = self.s.cookies.get_dict().get('sessionId', '')
+            self.phone = self.s.cookies.get_dict().get('_login_mobile_', '')
+            self.mobile = self.phone[:3] + "*" * 4 + self.phone[7:] if self.phone else ''
+            if self.phone:
+                Log(f'用户:【{self.mobile}】登陆成功')
+                return True
+            else:
+                Log(f'获取用户信息失败')
+                return False
+        except requests.exceptions.SSLError as e:
+            Log(f'SSL连接错误: {str(e)}')
+            return False
+        except requests.exceptions.RequestException as e:
+            Log(f'请求错误: {str(e)}')
+            return False
+        except Exception as e:
+            Log(f'未知错误: {str(e)}')
             return False
 
     def getSign(self):
@@ -133,20 +149,40 @@ class RUN:
         for retry in range(self.max_retries):
             try:
                 if req_type.lower() == 'get':
-                    response = self.s.get(url, headers=self.headers)
+                    response = self.s.get(url, headers=self.headers, timeout=30)
                 elif req_type.lower() == 'post':
-                    response = self.s.post(url, headers=self.headers, json=data)
+                    response = self.s.post(url, headers=self.headers, json=data, timeout=30)
                 else:
                     raise ValueError('Invalid req_type: %s' % req_type)
+                
+                # 检查响应状态码
+                response.raise_for_status()
+                
                 res = response.json()
                 return res
-            except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
-                if retry < self.max_retries - 1:  # 如果不是最后一次重试
-                    print(f'请求失败，{self.retry_delay}秒后进行第{retry + 2}次重试: {str(e)}')
-                    time.sleep(self.retry_delay)  # 延时后重试
+            except requests.exceptions.SSLError as e:
+                if retry < self.max_retries - 1:
+                    print(f'SSL错误，{self.retry_delay}秒后进行第{retry + 2}次重试: {str(e)}')
+                    time.sleep(self.retry_delay)
                     continue
-                else:  # 最后一次重试也失败
+                else:
+                    print(f'SSL错误，已重试{self.max_retries}次: {str(e)}')
+                    return None
+            except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+                if retry < self.max_retries - 1:
+                    print(f'请求失败，{self.retry_delay}秒后进行第{retry + 2}次重试: {str(e)}')
+                    time.sleep(self.retry_delay)
+                    continue
+                else:
                     print(f'请求失败，已重试{self.max_retries}次: {str(e)}')
+                    return None
+            except Exception as e:
+                if retry < self.max_retries - 1:
+                    print(f'未知错误，{self.retry_delay}秒后进行第{retry + 2}次重试: {str(e)}')
+                    time.sleep(self.retry_delay)
+                    continue
+                else:
+                    print(f'未知错误，已重试{self.max_retries}次: {str(e)}')
                     return None
 
     def sign(self):
