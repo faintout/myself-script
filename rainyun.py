@@ -1,63 +1,215 @@
-#!/usr/bin/python3  
-# -- coding: utf-8 --
-# @Time : 2023/6/30 10:23
-# -------------------------------
-# cron "0 0 6,8,20 * * *" script-path=xxx.py,tag=匹配cron用
-# const $ = new Env('雨云签到');
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+雨云自动签到脚本V2.0
+注册地址：https://www.rainyun.com
+用途：自动签到赚积分，积分可提现，也可在商城购买虚拟主机或云服务等
+环境变量：共有两个环境变量
+
+yyqd 账户与密码用&隔开，多账户用#隔开
+VERIFY_TOKEN 写滑块的token
+定时：建议每天执行一次
+"""
+
+import requests
+import json
+import os
+from typing import Tuple, Optional, Dict
+from dataclasses import dataclass
+
+try:
+    from notify import send
+except ImportError:
+    print("通知服务加载失败，请检查notify.py是否存在")
+    exit(1)
 
 
-# export rainyun_ck = [
-#     {"user":"xx","pwd":"xxx"},
-#     {"user":"xx","pwd":"xxx"},
-# ]
+@dataclass
+class UserInfo:
+    name: str
+    email: str
+    points: int
+    last_ip: str
+    last_login_area: str
 
-import json,requests,os,time
-from datetime import datetime
-from apscheduler.schedulers.blocking import BlockingScheduler
 
-ckList = os.getenv("rainyun_ck")
+class RainyunAPI:
+    BASE_URL = "https://api.v2.rainyun.com"
+    VERIFY_URL = "http://119.96.239.11:8888/api/getcode"
+    
+    def __init__(self):
+        self.session = requests.Session()
+        self.csrf_token = None
+    
+    def get_slide_verify(self) -> Tuple[str, str]:
+        verify_token = os.getenv("VERIFY_TOKEN")
+        if not verify_token:
+            print("错误：未设置VERIFY_TOKEN环境变量")
+            return "", ""
+            
+        headers = {"Content-Type": "application/json"}
+        data = {
+            "timeout": "60",
+            "type": "tencent-turing",
+            "appid": "2039519451",
+            "token": verify_token,
+            "developeraccount": "qqaoxin",
+            "referer": "https://dl.reg.163.com/"
+        }
+        
+        try:
+            response = self.session.post(self.VERIFY_URL, headers=headers, json=data)
+            response.raise_for_status()
+            result = response.json()
+            
+            if result.get("status") == 200 and result.get("success"):
+                verify_data = json.loads(result["data"]["code"])
+                return verify_data.get("ticket", ""), verify_data.get("randstr", "")
+            
+            print(f"验证码服务返回错误: {result.get('msg')}")
+            return "", ""
+            
+        except Exception as e:
+            print(f"验证码请求异常: {str(e)}")
+            return "", ""
 
-userList = json.loads(ckList)
+    def login(self, username: str, password: str) -> bool:
+        login_data = json.dumps({
+            "field": username,
+            "password": password
+        })
+        headers = {"Content-Type": "application/json"}
+        
+        try:
+            response = self.session.post(
+                f"{self.BASE_URL}/user/login",
+                headers=headers,
+                data=login_data
+            )
+            response.raise_for_status()
+            
+            self.csrf_token = response.cookies.get_dict().get('X-CSRF-Token')
+            return bool(self.csrf_token)
+            
+        except Exception as e:
+            print(f"登录失败: {str(e)}")
+            return False
 
-def login_sign (item):#line:17
-    user = item.get("user")
-    pwd = item.get("pwd")
-    O00OOO00O0OO0OO00 =requests .session ()#line:18
-    OOOO000000000O0O0 =O00OOO00O0OO0OO00 .post ('https://api.v2.rainyun.com/user/login',headers ={"Content-Type":"application/json"},data =json .dumps ({"field":f"{user}","password":f"{pwd}"}))#line:19
-    if OOOO000000000O0O0 .text .find ("200")>-1 :#line:20
-        print ("登录成功")#line:21
-        O000OOOOO000OOO0O =OOOO000000000O0O0 .cookies .get_dict ()['X-CSRF-Token']#line:22
-    else :#line:24
-        print (f"登录失败，响应信息：{OOOO000000000O0O0.text}")#line:25
-    O000O0OOOO00OOOOO ={'x-csrf-token':O000OOOOO000OOO0O ,}#line:31
-    O0O0O000OOOO0OOO0 =O00OOO00O0OO0OO00 .post ('https://api.v2.rainyun.com/user/reward/tasks',headers =O000O0OOOO00OOOOO ,data =json .dumps ({"task_name":"每日签到","verifyCode":""}))#line:32
-    print ('开始签到：签到结果 '+O0O0O000OOOO0OOO0 .text )#line:33
-    # print ('尝试20次服务器兑换！')#line:35
-    # for OO00000OO0OO0000O in range (20):#line:36
-    #     try:
-    #         OOOO00OO000O0O000 =O00OOO00O0OO0OO00 .post ('https://api.v2.rainyun.com/user/reward/items',headers =O000O0OOOO00OOOOO ,data ='{"item_id":104}')#line:37
-    #         OOO0O0OO0O000O0O0 =O00OOO00O0OO0OO00 .post ('https://api.v2.rainyun.com/user/reward/items',headers =O000O0OOOO00OOOOO ,data ='{"item_id":105}')#line:38
-    #         print (f'第{OO00000OO0OO0000O+1}次尝试兑换云服务器 '+json .loads (OOOO00OO000O0O000 .text )['message'])#line:39
-    #         print (f'第{OO00000OO0OO0000O+1}次尝试兑换云服务器 '+json .loads (OOO0O0OO0O000O0O0 .text )['message'])#line:40
-    #     except:
-    #         print('try later！！')
-    #     time.sleep (5 )#line:41
+    def get_user_info(self) -> Optional[UserInfo]:
+        if not self.csrf_token:
+            return None
+            
+        headers = {
+            "Content-Type": "application/json",
+            'x-csrf-token': self.csrf_token
+        }
+        
+        try:
+            response = self.session.get(
+                f"{self.BASE_URL}/user/?no_cache=false",
+                headers=headers
+            )
+            response.raise_for_status()
+            
+            data = response.json()['data']
+            return UserInfo(
+                name=data['Name'],
+                email=data['Email'],
+                points=data['Points'],
+                last_ip=data['LastIP'],
+                last_login_area=data['LastLoginArea']
+            )
+            
+        except Exception as e:
+            print(f"获取用户信息失败: {str(e)}")
+            return None
 
-def sendLoginSign():
-    # 获取今天的日期
-    today = datetime.today().strftime('%Y-%m-%d')
-    # 打印今天的日期
-    print("今天:", today)
-    # 这里是你想要执行的函数体
-    for item in userList:
-        login_sign (item)#line:45
-    print("")
-sendLoginSign()
-# # 创建调度器
-# scheduler = BlockingScheduler()
+    def sign_in(self, ticket: str, randstr: str) -> Tuple[bool, str]:
+        if not self.csrf_token:
+            return False, "签到失败：未获取到csrf_token"
+            
+        signin_data = json.dumps({
+            "task_name": "每日签到",
+            "verifyCode": "",
+            "vticket": ticket,
+            "vrandstr": randstr
+        })
+        headers = {
+            'x-csrf-token': self.csrf_token
+        }
+        
+        try:
+            response = self.session.post(
+                f"{self.BASE_URL}/user/reward/tasks",
+                headers=headers,
+                data=signin_data
+            )
+            
+            try:
+                result = response.json()
+            except:
+                return False, f"签到失败：HTTP {response.status_code}, 响应内容: {response.text}"
+            
+            if result.get("code") == 200:
+                return True, "签到成功"
+            else:
+                return False, f"签到失败：{result.get('message', '未知错误')} (code: {result.get('code')})"
+            
+        except Exception as e:
+            return False, f"签到异常：{str(e)}"
 
-# # 添加定时任务
-# scheduler.add_job(sendLoginSign, 'cron',second='0', minute='0', hour='7,19')
 
-# # 启动调度器
-# scheduler.start()
+def process_account(credentials: str) -> str:
+    try:
+        username, password = credentials.split('&')
+    except ValueError:
+        return "\n账户格式错误，请使用&分隔用户名和密码"
+
+    api = RainyunAPI()
+    
+    if not api.login(username, password):
+        return f'\n【用户名】{username}\n【签到状态】登录失败'
+
+    ticket, randstr = api.get_slide_verify()
+    if not ticket or not randstr:
+        return f'\n【用户名】{username}\n【签到状态】滑块验证失败'
+
+    user_info = api.get_user_info()
+    if not user_info:
+        return f'\n【用户名】{username}\n【签到状态】获取用户信息失败'
+
+    success, sign_message = api.sign_in(ticket, randstr)
+    
+    return (f'\n【用户名】{username}\n'
+            f'【电子邮件】{user_info.email}\n'
+            f'【签到状态】{sign_message}\n'
+            f'【剩余积分】{user_info.points}\n'
+            f'【最后登录ip】{user_info.last_ip}\n'
+            f'【最后登录地址】{user_info.last_login_area}')
+
+
+def main():
+    credentials = os.getenv("yyqd")
+    if not credentials:
+        print("错误：未设置yyqd环境变量")
+        return
+        
+    verify_token = os.getenv("VERIFY_TOKEN")
+    if not verify_token:
+        print("错误：未设置VERIFY_TOKEN环境变量")
+        return
+
+    results = []
+    for account in credentials.split('#'):
+        result = process_account(account)
+        results.append(result)
+
+    combined_message = "-"*45 + "\n".join(results)
+    print("###雨云签到###\n\n", combined_message)
+    
+    send("雨云签到", combined_message)
+
+
+if __name__ == '__main__':
+    main()
