@@ -17,21 +17,21 @@ const goodsList = [
   {
     id:1,
     name:'三得利 大麦茶15瓶',
-    activeId:'430',
-    goodsId:'7250850210720264192',
+    activeId:'457',
+    goodsId:'7272963230577680384',
 
   },
   {
     id:2,
     name:'三得利 橘皮乌龙15瓶',
-    goodsId:'7250850843503874048',
-    activeId:'431',
+    goodsId:'7272962282673364992',
+    activeId:'456',
   },
   {
     id:3,
     name:'三得利 桂花乌龙15瓶',
-    activeId:'432',
-    goodsId:'7250852389729849344',
+    activeId:'455',
+    goodsId:'7272961418908614656',
   }
 ]
 if(!userInfoList.length||userInfoList[0]===''){
