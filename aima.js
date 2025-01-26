@@ -1,5 +1,5 @@
 // cron: 35 7,18 * * *
-// 抓header中Access-Token 多账号换行
+// 抓header中Access-Token 多账号换行,token三天有有效随缘玩吧
 // export aima="eyJ0eXAiOxxx
 // eyJ0eXAiOxxx"
 const {
@@ -217,15 +217,19 @@ const api = {
 }
 
 const getUserInfo = async (token) => {
-  const {data:{content:{mobile,id,vipMemberPointDTO:{pointValue}}}} = await api.userInfo(token)
-  if(!mobile){
-    $.log(`账号【${index}】登录失效`)
-    $.log('')
-    return null
+  try{
+    const {data:{content:{mobile,id,vipMemberPointDTO:{pointValue}}}} = await api.userInfo(token)
+    if(!mobile){
+      $.log(`账号【${index}】登录失效`)
+      $.log('')
+      return null
+    }
+    $.log(`账号【${index}】 当前用户：【${mobile}】`);
+    $.log(`账号【${index}】 当前积分：【${pointValue}】`);
+    return id
+  }catch(e){
+    console.log('登录错误：',e?.response?.data||'')
   }
-  $.log(`账号【${index}】 当前用户：【${mobile}】`);
-  $.log(`账号【${index}】 当前积分：【${pointValue}】`);
-  return id
 }
 const receiveAward = async ({token,signed,signAwards}) => {
   const receiveList = signAwards.filter(item=>item.signNum<=signed&&item.receiveStatus===0)
