@@ -1,5 +1,5 @@
 // cron: 35 7,18 * * *
-// 抓header中Access-Token 多账号换行,token三天有有效随缘玩吧
+// 抓header中Access-Token 多账号换行
 // export aima="eyJ0eXAiOxxx
 // eyJ0eXAiOxxx"
 const {
