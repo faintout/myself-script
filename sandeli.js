@@ -1,5 +1,5 @@
 // cron: 40 8,17 * * *
-// 商品id列表 1-大麦茶 2-橘皮乌龙 3-桂花乌龙
+// 商品id列表 1-大麦茶 2-桂花乌龙 3-茉莉乌龙
 // 抓header中的Authorization 去掉bearer 多账号换行 如需抢购 追加 &商品id&addressId addressId是添加地址接口会返回 例如大麦茶就是 &1&addressId 
 // export sandeli="8e09bfc0xxx
 // 770f5xxxx"
@@ -17,21 +17,21 @@ const goodsList = [
   {
     id:1,
     name:'三得利 大麦茶15瓶',
-    activeId:'457',
-    goodsId:'7272963230577680384',
+    activeId:'516',
+    goodsId:'7305855462092832768',
 
   },
   {
     id:2,
-    name:'三得利 橘皮乌龙15瓶',
-    goodsId:'7272962282673364992',
-    activeId:'456',
+    name:'三得利-桂花乌龙15瓶',
+    goodsId:'7305856057000546304',
+    activeId:'517',
   },
   {
     id:3,
-    name:'三得利 桂花乌龙15瓶',
-    activeId:'455',
-    goodsId:'7272961418908614656',
+    name:'三得利 茉莉乌龙15瓶（新包装）',
+    activeId:'456',
+    goodsId:'7272962282673364992',
   }
 ]
 if(!userInfoList.length||userInfoList[0]===''){
