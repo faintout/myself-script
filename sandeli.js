@@ -23,9 +23,9 @@ const goodsList = [
   },
   {
     id:2,
-    name:'三得利-桂花乌龙15瓶',
-    goodsId:'7305856057000546304',
-    activeId:'517',
+    name:'三得利 植物茶黑豆茶15瓶',
+    goodsId:'7316120183365910528',
+    activeId:'522',
   },
   {
     id:3,
