@@ -4,8 +4,9 @@
   version:1.0
   date:2024-11-12
   cron: 0 10 ? * MON
+  pzhttp: 账户#密码
 */
-const pzhttp = os.environ.get("pinzan","")
+const pzhttp = process.env['pinzan'] || "";
 const axios = require("axios")
 let d = {
   table: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "/"],
@@ -73,8 +74,8 @@ let d = {
   }
 };
 
-async function login(){
-  let arr = pzhttp.split("#");
+async function login(pzUser){
+  let arr = pzUser.split("#");
   try{
     for (var e = d.encode("".concat(arr[0], "QWERIPZAN1290QWER").concat(arr[1])), t = "", o = 0; o < 80; o++){
       t += Math.random().toString(16).slice(2);
@@ -115,14 +116,22 @@ async function sign(token){
   }
 }
 
-async function main(){
-  let token = await login();
+async function main(pzUser){
+  let token = await login(pzUser);
   if(token){
     await sign(token);
   }
+  await new Promise(resolve => setTimeout(resolve, 10*1000));
 }
 
 
 !(async function(){
-  await main();
+  if(!pzhttp){
+    console.log("pzhttp未设置");
+    return;
+  }
+  const pzArr = pzhttp.split("\n");
+  for(let i = 0; i < pzArr.length; i++){
+    await main(pzArr[i]);
+  }
 })()
