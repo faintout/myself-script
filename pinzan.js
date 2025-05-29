@@ -4,8 +4,13 @@
   version:1.0
   date:2024-11-12
   cron: 0 10 ? * MON
-  pzhttp: 账户#密码
+  pzhttp: 账户#密码  多账号换行
 */
+const fs = require('fs');
+const file = '.pinzan_count';
+let count = fs.existsSync(file) ? parseInt(fs.readFileSync(file, 'utf8')) || 0 : 0;
+fs.writeFileSync(file, String(count + 1));
+
 const pzhttp = process.env['pinzan'] || "";
 const axios = require("axios")
 let d = {
@@ -126,6 +131,8 @@ async function main(pzUser){
 
 
 !(async function(){
+  console.log(`第${count+1}次执行，延时:${count*5}分钟`)
+  await new Promise(r => setTimeout(r, count * 300000));
   if(!pzhttp){
     console.log("pzhttp未设置");
     return;
