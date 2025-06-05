@@ -408,7 +408,7 @@ const processTokens = async () => {
       }
     }
     $.log('')
-    await sendNotify('爱玛签到', $.logs.join('\n\n'))
+    await sendNotify('爱玛签到', $.logs.join('\n'))
     $.done()
   };
   
