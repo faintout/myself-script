@@ -29,6 +29,12 @@ const goodsList = [
   },
   {
     id:3,
+    name:'三得利 沁莓水15瓶',
+    activeId:'523',
+    goodsId:'7321170253731782656',
+  },
+    {
+    id:4,
     name:'三得利 茉莉乌龙15瓶（新包装）',
     activeId:'456',
     goodsId:'7272962282673364992',
@@ -213,7 +219,7 @@ const processTokens = async () => {
       }
     }
     $.log('')
-    $.logs = $.logs.join('<br>')
+    $.logs = $.logs.join('\n\n')
   };
   
   processTokens().finally(async() => {

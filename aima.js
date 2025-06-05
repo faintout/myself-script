@@ -3,11 +3,13 @@
 // export aima="eyJ0eXAiOxxx
 // eyJ0eXAiOxxx"
 const {
-  getCurrDay,checkTime,Env,random
+  getCurrDay,checkTime,Env,random,getProxyUrl
 } = require('./utils.js')
 const {sendNotify} = require('./sendNotify.js')
 const $ = new Env("爱玛签到");
 const axios = require('axios')
+let proxyUrl = ''
+const isProxy = false
 let index = 0
 const reqMax = 3
 let adsList = []
@@ -115,6 +117,14 @@ const getTokenHeaders = (token = "") => {
     params.Sign = hexMd5(D)
     return params
 }
+const proxyConfig = proxyUrl ? {
+  proxy: {
+    host: proxyUrl.split(':')[0],
+    port: proxyUrl.split(':')[1],
+    protocol: 'http',
+  }
+} : {};
+
 const api = {
   join: (token) => {
       return axios({
@@ -124,7 +134,8 @@ const api = {
             ...headers,
             ...getTokenHeaders(token)
           },
-          data:{"activityId":signActivityId,"activitySceneId":null}
+          data:{"activityId":signActivityId,"activitySceneId":null},
+          ...proxyConfig
       })
   },
   search: (token) => {
@@ -135,7 +146,8 @@ const api = {
             ...headers,
             ...getTokenHeaders(token)
           },
-          data:{"activityId":signActivityId}
+          data:{"activityId":signActivityId},
+          ...proxyConfig
       })
   },
   luckyJoin: (token,activeId) => {
@@ -146,7 +158,8 @@ const api = {
             ...headers,
             ...getTokenHeaders(token)
           },
-          data:{"activityId":activeId,"preview":false,"mobile":"","code":"","activitySceneId":null,"codeType":1}
+          data:{"activityId":activeId,"preview":false,"mobile":"","code":"","activitySceneId":null,"codeType":1},
+          ...proxyConfig
       })
   },
   luckySearch: (token,activeId) => {
@@ -157,7 +170,8 @@ const api = {
             ...headers,
             ...getTokenHeaders(token)
           },
-          data:{"activityId":activeId,"preview":false}
+          data:{"activityId":activeId,"preview":false},
+          ...proxyConfig
       })
   },
   userInfo: (token) => {
@@ -168,6 +182,7 @@ const api = {
             ...headers,
             ...getTokenHeaders(token)
           },
+          ...proxyConfig
       })
   },
   getAds: (token) => {
@@ -178,7 +193,8 @@ const api = {
             ...headers,
             ...getTokenHeaders(token)
           },
-          data:{"location":1,"adType":0,"status":2}
+          data:{"location":1,"adType":0,"status":2},
+          ...proxyConfig
       })
   },
   getLocation: (token) => {
@@ -189,7 +205,8 @@ const api = {
             ...headers,
             ...getTokenHeaders(token)
           },
-          data:{"locations":[0,1,2]}
+          data:{"locations":[0,1,2]},
+          ...proxyConfig
       })
   },
   receive_award: (token,activityAwardId,awardId) => {
@@ -200,7 +217,8 @@ const api = {
             ...headers,
             ...getTokenHeaders(token)
           },
-          data:{"activityId":signActivityId,"awardCount":1,activityAwardId,awardId,"awardType":4}
+          data:{"activityId":signActivityId,"awardCount":1,activityAwardId,awardId,"awardType":4},
+          ...proxyConfig
       })
   },
   wxShare: (token,activeId) => {
@@ -211,7 +229,8 @@ const api = {
             ...headers,
             ...getTokenHeaders(token)
           },
-          data:{"activityId":activeId}
+          data:{"activityId":activeId},
+          ...proxyConfig
       })
   },
 }
@@ -228,7 +247,7 @@ const getUserInfo = async (token) => {
     $.log(`账号【${index}】 当前积分：【${pointValue}】`);
     return id
   }catch(e){
-    console.log('登录错误：',e?.response?.data||'')
+    console.log('登录错误：',e?.response?.data?.chnDesc||e.response||e.cause||e)
   }
 }
 const receiveAward = async ({token,signed,signAwards}) => {
@@ -353,6 +372,13 @@ const processTokens = async () => {
     await $.wait(randomTime*1000)
     for (const token of userInfoList) {
       try {
+        if(isProxy){
+          $.log('使用代理')
+          const prUrl = await getProxyUrl()
+          if(prUrl){
+            proxyUrl = prUrl
+          }
+        }
         $.log('')
         index++
         !adsList.length&&await getAds(token)
@@ -382,7 +408,7 @@ const processTokens = async () => {
       }
     }
     $.log('')
-    await sendNotify('爱玛签到', $.logs.join('<br>'))
+    await sendNotify('爱玛签到', $.logs.join('\n\n'))
     $.done()
   };
   
